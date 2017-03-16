@@ -1,0 +1,296 @@
+<html>
+   <head>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-blue.min.css" />
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	  <meta name="description" content="Compute md5 checksum of files from your Google Drive™ file/folders. Download as md5 checksums text file. It's fast & free to use tool." />
+	  <link rel='shortcut icon' type='image/x-icon' href='./assets/favicon.ico'/>
+	  <title>md5sum</title>
+	  <style>
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:active {
+    text-decoration: underline;
+}
+
+#downloadmd5sum {
+	bottom:10%;
+	position:fixed;
+	right:8%;
+	z-index:998;
+}
+
+#suggest {
+	bottom:22%;
+	position:fixed;
+	right:8%;
+	z-index:998;
+}
+
+</style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-74329110-13', 'auto');
+  ga('send', 'pageview');
+
+</script>	   
+<script type="text/javascript">
+var CLIENT_ID = '982370769845-7fe8e3n089ale46kmb7dhilsue7p3qbg.apps.googleusercontent.com';
+var SCOPES = 'https://www.googleapis.com/auth/drive';
+var PARAMS = {};
+var MD5SUMS = '';
+var dc = {};
+
+"use strict";
+// Auth stuff gets top priority as it can take a while....
+var window_location_to_params_object = function() {
+    var match;
+    var pl = /\+/g; // Regex for replacing addition symbol with a space
+    var search = /([^&=]+)=?([^&]*)/g;
+    var decode = function(s) {
+        return decodeURIComponent(s.replace(pl, " "));
+    };
+    var query = window.location.search.substring(1);
+    var url_params = {};
+    while ((match = search.exec(query)) !== null)
+        url_params[decode(match[1])] = decode(match[2]);
+    PARAMS = url_params;
+    return url_params;
+}
+
+dc.url_file_id = (function() {
+    try {
+        var params = window_location_to_params_object();
+        return JSON.parse(params['state'])['ids'];
+    } catch (e) {
+        return undefined
+    }
+})();
+
+function checkAuth() {
+    var options = {
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        immediate: true
+    };
+    gapi.auth.authorize(options, handleAuthResult);
+}
+
+function handleAuthClick(event) {
+    gapi.auth.authorize({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            immediate: false
+        },
+        handleAuthResult);
+    return false;
+}
+
+function handleAuthResult(authResult) {
+    var authorizeButton = document.getElementById('authorize-button');
+
+    if (authResult && !authResult.error) {
+        authorizeButton.style.display = 'none';
+        makeApiCall();
+    } else {
+        authorizeButton.style.display = 'initial';
+        authorizeButton.onclick = handleAuthClick;
+		stops();		
+    }
+}
+
+function makeApiCall() {
+    gapi.client.load('drive', 'v2', findType);
+}
+
+function appendPre(message) {
+    $("#output").append(message + '<br />');
+}
+
+function findType(callback) {
+
+    if (!dc.url_file_id) {
+        alert('Open files using the Open with contextual menu from your Google Drive.');
+        stops();
+    }
+
+    var X = function(request) {
+        request.execute(function(resp) {
+            var mime = resp.mimeType;
+            if (mime == "application/vnd.google-apps.folder")
+                makeRequestfolder();
+            else
+                makeRequestfile();
+        });
+    }
+    var initialRequest = gapi.client.drive.files.get({
+        'fileId': dc.url_file_id
+    });
+    X(initialRequest);
+}
+
+function makeRequestfile(callback) {
+    var retrievePageOfFiles = function(request) {
+        request.execute(function(resp) {
+            var title = resp.title;
+            var md5Checksum = resp.md5Checksum;
+            var mime = resp.mimeType;
+
+            if (md5Checksum)
+                appendPre(md5Checksum + ' ' + title);
+            else {
+                if (mime == "application/vnd.google-apps.folder") {
+                    md5Checksum = '--------------------------------';
+                    var mParams = JSON.parse(PARAMS['state']);
+                    mParams['ids'] = resp.id;
+                    appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+                }
+            }
+            MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+        });
+    }
+
+    for (var i = 0; i < dc.url_file_id.length; i++) {
+        var initialRequest = gapi.client.drive.files.get({
+            'fileId': dc.url_file_id[i]
+        });
+        retrievePageOfFiles(initialRequest);
+    }
+    stops();
+}
+
+function makeRequestfolder(callback) {
+    var retrievePageOfFiles = function(request) {
+        request.execute(function(resp) {
+
+
+
+            for (i = 0; i < resp.items.length; i++) {
+                var title = resp.items[i].title;
+                var md5Checksum = resp.items[i].md5Checksum;
+
+                if (md5Checksum)
+                    appendPre(md5Checksum + ' ' + title);
+                else {
+                    md5Checksum = '--------------------------------';
+                    var mParams = JSON.parse(PARAMS['state']);
+                    mParams['ids'] = resp.items[i].id;
+
+                    if (resp.items[i].mimeType == "application/vnd.google-apps.folder")
+                        appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+                    else
+                        appendPre(md5Checksum + ' ' + title);
+
+                }
+                MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+            }
+
+            var nextPageToken = resp.nextPageToken;
+            if (nextPageToken) {
+                request = gapi.client.drive.files.list({
+                    'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+                    'pageToken': nextPageToken
+                });
+                retrievePageOfFiles(request);
+            }
+        });
+    }
+
+    var initialRequest = gapi.client.drive.files.list({
+        'q': '\'' + dc.url_file_id + '\'' + ' in parents'
+    });
+    retrievePageOfFiles(initialRequest);
+    stops();
+}
+
+function getPlainText() {
+    var text = "";
+    if (typeof window.getSelection != "undefined") {
+        text = $('#output').text();
+        var download = document.getElementById('downloadmd5sum');
+        download.href = 'data:text/plain;charset:utf-8,' + encodeURIComponent(MD5SUMS);
+    }
+    return text;
+}
+
+function stops() {
+    $("#progress").remove();
+}
+</script>
+      <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+   </head>
+   <body>
+
+<style>
+
+.mdl-layout__header {
+  color: #505050;
+}
+
+.mdl-layout__header-row {
+	padding: 0 40px;
+	background-color: #f5f5f5;
+}
+
+.mdl-layout.has-drawer .mdl-layout__header-row {
+  padding: 0 40px 0 80px;
+}
+
+</style>
+
+<div class="mdl-layout mdl-js-layout">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+
+      <span class="mdl-layout-title"><img style="width:1.5em"  src="https://lh3.googleusercontent.com/hfjD1DbSCNnAPRKwTusNg8mk3ESsn3n4CGeC3M6ad7W_GLE_F8bjVYDqy2iD8SoDyN3jc9_1bzw=s50-h50-e365"/> &emsp;Drive Checksum</span>
+      <div class="mdl-layout-spacer"></div>
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+      </nav>
+    </div>
+  </header>
+  <main class="mdl-layout__content">
+
+  		<div id="progress" style="width:100%;"  class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+		<div id="authorize-div">
+         <button id="authorize-button" style="display:none; margin:1%;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="handleAuthClick(event)">Authorize</button>
+      </div>
+	  
+<!-- Rich Tooltip -->
+<div id="suggest"><a href="https://chrome.google.com/webstore/detail/drive-checksum/mcljolpofjcpckhnncpojbahnikjlebf" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365"/></a></div>
+<div class="mdl-tooltip" data-mdl-for="suggest">
+Get full drive file paths with the sheets add-on.
+</div>
+      <pre id="output"></pre>
+
+
+<a download="md5sum.txt" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" id="downloadmd5sum" onclick="getPlainText();">
+  <i id="download" class="material-icons">file_download</i>
+</a>
+
+</main>
+  
+
+  
+</div>
+
+  
+
+  
+   </body>
+</html>
