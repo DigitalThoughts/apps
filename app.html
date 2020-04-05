@@ -91,6 +91,7 @@ function checkAuth() {
         scope: SCOPES,
         immediate: true
     };
+	alert(gapi.auth.authorize(options, handleAuthResult))
     gapi.auth.authorize(options, handleAuthResult);
 }
 
