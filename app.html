@@ -102,7 +102,6 @@ function handleAuthClick(event) {
 }
 
 function handleAuthResult(authResult) {
-	alert("handleAuthResult " + authResult);
     var authorizeButton = document.getElementById('authorize-button');
     if (authResult && !authResult.error) {
         authorizeButton.style.display = 'none';
