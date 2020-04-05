@@ -104,7 +104,7 @@ function handleAuthClick(event) {
 
 function handleAuthResult(authResult) {
     var authorizeButton = document.getElementById('authorize-button');
-
+alert(authorizeButton)
     if (authResult && !authResult.error) {
         authorizeButton.style.display = 'none';
         makeApiCall();
