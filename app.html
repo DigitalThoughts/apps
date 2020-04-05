@@ -77,6 +77,7 @@ var window_location_to_params_object = function() {
 dc.url_file_id = (function() {
     try {
         var params = window_location_to_params_object();
+	    alert("params " + JSON.stringify(params));
         return JSON.parse(params['state'])['ids'];
     } catch (e) {
         return undefined
@@ -84,6 +85,7 @@ dc.url_file_id = (function() {
 })();
 
 function checkAuth() {
+	alert("checkAuth ");
     var options = {
         client_id: CLIENT_ID,
         scope: SCOPES,
@@ -103,8 +105,8 @@ function handleAuthClick(event) {
 }
 
 function handleAuthResult(authResult) {
+alert("handleAuthResult " + authResult);
     var authorizeButton = document.getElementById('authorize-button');
-alert(authorizeButton)
     if (authResult && !authResult.error) {
         authorizeButton.style.display = 'none';
         makeApiCall();
