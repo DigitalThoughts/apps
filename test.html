@@ -79,7 +79,7 @@
 				<div class="mdl-layout-spacer"></div>
 				<nav class="mdl-navigation mdl-layout--large-screen-only">
 				<button id="signout_button" style="display: none;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Sign Out</button>
-				<div id="profileImageDiv" class="profileImageDiv" onclick="handleSignoutClick();handleSignoutClick();" style="cursor:pointer;">
+				<div id="profileImageDiv" class="profileImageDiv" onclick="swapAccounts();" style="cursor:pointer;">
 					<div id="profileName" class="profileName" style="display: none;" title=""></div>
 					<img id="profileImageImg" class="profileImageImg" src="https://lh6.googleusercontent.com/-UO4sQx_8saQ/AAAAAAAAAAI/AAAAAAAAJt0/AAKWJJOYXi3EUtu9wwpOZkqWLID1HzavJQ/s96-c/photo.jpg?size=72" alt="Google Account" title="Switch Google Account">
 				</div>
@@ -345,6 +345,14 @@ function findType(callback) {
 			return text;
 		}
 
+		function swapAccounts()
+		{
+			handleSignoutClick();
+			handleSignoutClick();
+			$('#output').html('');
+			
+		}
+		
 		function stops() {
 			$("#progress").remove();
 		}
