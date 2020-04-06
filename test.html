@@ -24,7 +24,37 @@
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
       var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+var PARAMS = {};
+var MD5SUMS = '';
+var dc = {};
 
+"use strict";
+// Auth stuff gets top priority as it can take a while....
+var window_location_to_params_object = function() {
+    var match;
+    var pl = /\+/g; // Regex for replacing addition symbol with a space
+    var search = /([^&=]+)=?([^&]*)/g;
+    var decode = function(s) {
+        return decodeURIComponent(s.replace(pl, " "));
+    };
+    var query = window.location.search.substring(1);
+    var url_params = {};
+    while ((match = search.exec(query)) !== null)
+        url_params[decode(match[1])] = decode(match[2]);
+    PARAMS = url_params;
+    return url_params;
+}
+
+dc.url_file_id = (function() {
+    try {
+        var params = window_location_to_params_object();
+        return JSON.parse(params['state'])['ids'];
+    } catch (e) {
+        return undefined
+    }
+})();
+
+      
       var authorizeButton = document.getElementById('authorize_button');
       var signoutButton = document.getElementById('signout_button');
 
