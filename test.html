@@ -2,6 +2,148 @@
 var PARAMS = {};
 var MD5SUMS = '';
 var dc = {};
+
+  
+"use strict";
+// Auth stuff gets top priority as it can take a while....
+var window_location_to_params_object = function() {
+    var match;
+    var pl = /\+/g; // Regex for replacing addition symbol with a space
+    var search = /([^&=]+)=?([^&]*)/g;
+    var decode = function(s) {
+        return decodeURIComponent(s.replace(pl, " "));
+    };
+    var query = window.location.search.substring(1);
+    var url_params = {};
+    while ((match = search.exec(query)) !== null)
+        url_params[decode(match[1])] = decode(match[2]);
+    PARAMS = url_params;
+    return url_params;
+}
+
+dc.url_file_id = (function() {
+    try {
+        var params = window_location_to_params_object();
+        return JSON.parse(params['state'])['ids'];
+    } catch (e) {
+        return undefined
+    }
+})();
+
+function appendPre(message) {
+    $("#output").append(message + '<br />');
+}
+
+  
+function findType(callback) {
+
+    if (!dc.url_file_id) {
+        alert('Open files using the Open with contextual menu from your Google Drive.');
+        stops();
+    }
+
+    var X = function(request) {
+        request.execute(function(resp) {
+            var mime = resp.mimeType;
+            if (mime == "application/vnd.google-apps.folder")
+                makeRequestfolder();
+            else
+                makeRequestfile();
+        });
+    }
+    var initialRequest = gapi.client.drive.files.get({
+        'fileId': dc.url_file_id
+    });
+    X(initialRequest);
+}
+
+function makeRequestfile(callback) {
+    var retrievePageOfFiles = function(request) {
+        request.execute(function(resp) {
+            var title = resp.title;
+            var md5Checksum = resp.md5Checksum;
+            var mime = resp.mimeType;
+
+            if (md5Checksum)
+                appendPre(md5Checksum + ' ' + title);
+            else {
+                if (mime == "application/vnd.google-apps.folder") {
+                    md5Checksum = '--------------------------------';
+                    var mParams = JSON.parse(PARAMS['state']);
+                    mParams['ids'] = resp.id;
+                    appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+                }
+            }
+            MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+        });
+    }
+
+    for (var i = 0; i < dc.url_file_id.length; i++) {
+        var initialRequest = gapi.client.drive.files.get({
+            'fileId': dc.url_file_id[i]
+        });
+        retrievePageOfFiles(initialRequest);
+    }
+    stops();
+}
+
+function makeRequestfolder(callback) {
+    var retrievePageOfFiles = function(request) {
+        request.execute(function(resp) {
+
+
+
+            for (i = 0; i < resp.items.length; i++) {
+                var title = resp.items[i].title;
+                var md5Checksum = resp.items[i].md5Checksum;
+
+                if (md5Checksum)
+                    appendPre(md5Checksum + ' ' + title);
+                else {
+                    md5Checksum = '--------------------------------';
+                    var mParams = JSON.parse(PARAMS['state']);
+                    mParams['ids'] = resp.items[i].id;
+
+                    if (resp.items[i].mimeType == "application/vnd.google-apps.folder")
+                        appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+                    else
+                        appendPre(md5Checksum + ' ' + title);
+
+                }
+                MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+            }
+
+            var nextPageToken = resp.nextPageToken;
+            if (nextPageToken) {
+                request = gapi.client.drive.files.list({
+                    'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+                    'pageToken': nextPageToken
+                });
+                retrievePageOfFiles(request);
+            }
+        });
+    }
+
+    var initialRequest = gapi.client.drive.files.list({
+        'q': '\'' + dc.url_file_id + '\'' + ' in parents'
+    });
+    retrievePageOfFiles(initialRequest);
+    stops();
+}
+
+function getPlainText() {
+    var text = "";
+    if (typeof window.getSelection != "undefined") {
+        text = $('#output').text();
+        var download = document.getElementById('downloadmd5sum');
+        download.href = 'data:text/plain;charset:utf-8,' + encodeURIComponent(MD5SUMS);
+    }
+    return text;
+}
+
+function stops() {
+    $("#progress").remove();
+}
   
   var GoogleAuth;
   var SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
