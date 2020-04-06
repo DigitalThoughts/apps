@@ -105,6 +105,7 @@
       function listFiles() {
         gapi.client.drive.files.get({
           'pageSize': 10,
+          'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
           'fields': "nextPageToken, md5Checksum, +originalFilename"
         }).then(function(response) {
           appendPre('Checksums:');
