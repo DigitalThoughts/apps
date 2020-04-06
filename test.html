@@ -159,6 +159,28 @@
 		function appendPre(message) {
 			$("#output").append(message + '<br />');
 		}
+		
+function findType(callback) {
+    if (!dc.url_file_id) {
+        alert('Open files using the Open with contextual menu from your Google Drive.');
+        stops();
+    }
+
+    var X = function(request) {
+        request.execute(function(resp) {
+            var mime = resp.mimeType;
+            if (mime == "application/vnd.google-apps.folder")
+                makeRequestfolder();
+            else
+                makeRequestfile();
+        });
+    }
+    var initialRequest = gapi.client.drive.files.get({
+        'fileId': dc.url_file_id
+    });
+    X(initialRequest);
+}
+		
 		var authorizeButton = document.getElementById('authorize_button');
 		var signoutButton = document.getElementById('signout_button');
 		
@@ -207,7 +229,8 @@
 					$("#profileName").html(obj.displayName);
 					
 				});
-				listFiles();
+				findType()
+				//listFiles();
 			} else {
 				authorizeButton.style.display = 'block';
 				signoutButton.style.display = 'none';
