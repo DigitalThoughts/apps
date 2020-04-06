@@ -293,6 +293,8 @@ function findType(callback) {
 		
 		var obj = resp.result.files
 		console.log("***********" + JSON.stringify(obj))
+		console.log("**** resp.result.files*******" +  (resp.result.files.length))
+		
 		
             for (i = 0; i < obj.length; i++) {
                 var filename = obj[i].name;
