@@ -109,10 +109,13 @@
           'fields': "md5Checksum, originalFilename"
         }).then(function(response) {
           appendPre('Checksums:');
-          appendPre(result.md5Checksum + " *" + result.originalFilename)
+          appendPre(response.result.md5Checksum + " *" + response.result.originalFilename)
           //response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
         });
       }
+
+      
+      
 
     </script>
 
