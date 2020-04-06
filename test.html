@@ -46,12 +46,6 @@
 </head>
 
 <body>
-	<!--Add buttons to initiate auth sequence and sign out-->
-	<button id="authorize_button" style="display: none;">Authorize</button>
-	<button id="signout_button" style="display: none;">Sign Out</button>
-
-	<pre id="content" style="white-space: pre-wrap;"></pre>
-
 	<script type="text/javascript">
 		(function(i, s, o, g, r, a, m) {
 			i['GoogleAnalyticsObject'] = r;
@@ -259,6 +253,10 @@
 		<main class="mdl-layout__content">
 
 			<div id="progress" style="width:100%;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+
+			<!--Add buttons to initiate auth sequence and sign out-->
+			<button id="authorize_button" style="display: none;">Authorize</button>
+			<button id="signout_button" style="display: none;">Sign Out</button>
 
 			<div id="suggest"><a href="https://chrome.google.com/webstore/detail/drive-checksum/mcljolpofjcpckhnncpojbahnikjlebf" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365" /></a></div>
 			<div class="mdl-tooltip" data-mdl-for="suggest">
