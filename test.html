@@ -130,11 +130,12 @@
 					MD5SUMS += md5Checksum + ' ' + title + '\r\n';
 				});
 			}
-			alert(JSON.stringify(dc))
+			
 			for (var i = 0; i < dc.url_file_id.length; i++) {
 				var initialRequest = gapi.client.drive.files.get({
 					'fileId': dc.url_file_id[i]
 				});
+				alert(JSON.stringify(initialRequest))
 				retrievePageOfFiles(initialRequest);
 			}
 			stops();
