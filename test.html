@@ -319,7 +319,7 @@ function findType(callback) {
             if (nextPageToken) {
                 request = gapi.client.drive.files.list({
                     'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-			'fields': "id, mimeType, md5Checksum",
+			//'fields': "id, mimeType, md5Checksum",
                     'pageToken': nextPageToken
                 });
                 retrievePageOfFiles(request);
@@ -329,7 +329,7 @@ function findType(callback) {
 
     var initialRequest = gapi.client.drive.files.list({
         'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-	    'fields': "id, mimeType, md5Checksum"
+	    //'fields': "id, mimeType, md5Checksum"
     });
     retrievePageOfFiles(initialRequest);
     stops();
