@@ -113,11 +113,8 @@
 		function makeRequestfile(callback) {
 			alert("makeRequestfile")
 			var retrievePageOfFiles = function(request) {
-				
-				alert(request)
-				
 				request.then(function(resp) {
-					console.log(resp); //resp.body contains the string value of the file
+					console.log(JSON.stringify(resp)); //resp.body contains the string value of the file
 										var title = resp.title;
 					var md5Checksum = resp.md5Checksum;
 					var mime = resp.mimeType;
