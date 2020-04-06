@@ -148,6 +148,7 @@
 		}
 		var authorizeButton = document.getElementById('authorize_button');
 		var signoutButton = document.getElementById('signout_button');
+		
 		/**
 		 *  On load, called to load the auth2 library and API client library.
 		 */
@@ -207,11 +208,7 @@
 		 *
 		 * @param {string} message Text to be placed in pre element.
 		 */
-		/*function appendPre(message) {
-			var pre = document.getElementById('content');
-			var textContent = document.createTextNode(message + '\n');
-			pre.appendChild(textContent);
-		}*/
+		
 		/**
 		 * Print files.
 		 */
@@ -236,8 +233,10 @@
 					var filename = resp.name;
 					var md5Checksum = resp.md5Checksum;
 					var mime = resp.mimeType;
-					if (md5Checksum)
+					if (md5Checksum) {
+						alert(md5Checksum + ' ' + filename)
 						appendPre(md5Checksum + ' ' + filename);
+					}
 					else {
 						if (mime == "application/vnd.google-apps.folder") {
 							md5Checksum = '--------------------------------';
