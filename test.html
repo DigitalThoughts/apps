@@ -103,9 +103,9 @@
        * Print files.
        */
       function listFiles() {
-        gapi.client.drive.files.list({
+        gapi.client.drive.files({
           'pageSize': 10,
-          'fields': "nextPageToken, files(id, name), md5Checksum,+originalFilename"
+          'fields': "nextPageToken, files(id, name), md5Checksum, +originalFilename"
         }).then(function(response) {
           appendPre('Files:');
           var files = response.result.files;
