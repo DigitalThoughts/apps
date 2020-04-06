@@ -148,16 +148,16 @@ dc.url_file_id = (function() {
         for (var i = 0; i < dc.url_file_id.length; i++) {
           gapi.client.drive.files.get({
             'fileId': dc.url_file_id[i],
-            'fields': "*"
+            'fields': "name, id, mimeType, md5Checksum"
           }).then(function(resp) {
-
             console.log(JSON.stringify(resp))
             
-            /*var title = resp.title;
+            var filename = resp.name;
             var md5Checksum = resp.md5Checksum;
             var mime = resp.mimeType;
+            
             if (md5Checksum)
-              appendPre(md5Checksum + ' ' + title);
+              appendPre(md5Checksum + ' ' + filename);
             else {
               if (mime == "application/vnd.google-apps.folder") {
                 md5Checksum = '--------------------------------';
@@ -166,14 +166,8 @@ dc.url_file_id = (function() {
                 appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
               }
             }
-            MD5SUMS += md5Checksum + ' ' + title + '\r\n';*/
-            
-          appendPre('Checksums:');
-          //appendPre(resp.result.md5Checksum + " *" + resp.result.originalFilename)
-
+            MD5SUMS += md5Checksum + ' ' + title + '\r\n';
         });
-          
-          
         }
         //stops();
       }
