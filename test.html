@@ -289,13 +289,7 @@ function findType(callback) {
     var retrievePageOfFiles = function(request) {
 	    
         request.then(function(resp) {
-		console.log(JSON.stringify(resp))
-		
 		var obj = resp.result.files
-		console.log("***********" + JSON.stringify(obj))
-		console.log("**** resp.result.files*******" +  (resp.result.files.length))
-		
-		
             for (i = 0; i < obj.length; i++) {
                 var filename = obj[i].name;
                 var md5Checksum = obj[i].md5Checksum;
@@ -305,9 +299,9 @@ function findType(callback) {
                 else {
                     md5Checksum = '--------------------------------';
                     var mParams = JSON.parse(PARAMS['state']);
-                    mParams['ids'] = resp.items[i].id;
+                    mParams['ids'] = obj[i].id;
 
-                    if (resp.items[i].mimeType == "application/vnd.google-apps.folder")
+                    if (obj[i].mimeType == "application/vnd.google-apps.folder")
                         appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
                     else
                         appendPre(md5Checksum + ' ' + filename);
