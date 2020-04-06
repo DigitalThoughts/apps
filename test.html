@@ -106,7 +106,7 @@
         gapi.client.drive.files.get({
           'pageSize': 10,
           'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
-          'fields': "md5Checksum, +originalFilename"
+          'fields': "md5Checksum"
         }).then(function(response) {
           appendPre('Checksums:');
           response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
