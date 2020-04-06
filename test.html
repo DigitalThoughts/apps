@@ -147,8 +147,7 @@ dc.url_file_id = (function() {
       function listFiles() {
         for (var i = 0; i < dc.url_file_id.length; i++) {
           gapi.client.drive.files.get({
-            'fileId': dc.url_file_id[i]
-            'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
+            'fileId': dc.url_file_id[i],
             'fields': "*"
           }).then(function(resp) {
 
