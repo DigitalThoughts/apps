@@ -109,6 +109,7 @@
           'fields': "md5Checksum"
         }).then(function(response) {
           appendPre('Checksums:');
+          console.log(JSON.stringify(map))
           response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
         });
       }
