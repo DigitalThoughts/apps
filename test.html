@@ -68,6 +68,7 @@
 				<span class="mdl-layout-title"><img style="width:1.5em" src="https://lh3.googleusercontent.com/hfjD1DbSCNnAPRKwTusNg8mk3ESsn3n4CGeC3M6ad7W_GLE_F8bjVYDqy2iD8SoDyN3jc9_1bzw=s50-h50-e365" /> &emsp;Drive Checksum</span>
 				<div class="mdl-layout-spacer"></div>
 				<nav class="mdl-navigation mdl-layout--large-screen-only">
+					<button id="signout_button" style="display: none;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Sign Out</button>
 					<span>by Darren D'Mello</span>
 				</nav>
 			</div>
@@ -77,9 +78,8 @@
 			<div id="progress" style="width:100%;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
 
 			<!--Add buttons to initiate auth sequence and sign out-->
-			<button id="authorize_button" style="display: none;">Authorize</button>
-			<button id="signout_button" style="display: none;">Sign Out</button>
-
+			<button id="authorize_button" style="display: none;margin:1%;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Authorize</button>
+			
 			<div id="suggest"><a href="https://chrome.google.com/webstore/detail/drive-checksum/mcljolpofjcpckhnncpojbahnikjlebf" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365" /></a></div>
 			<div class="mdl-tooltip" data-mdl-for="suggest">
 				Get full drive file paths with the sheets add-on.
