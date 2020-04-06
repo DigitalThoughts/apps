@@ -183,6 +183,11 @@
 			if (isSignedIn) {
 				authorizeButton.style.display = 'none';
 				signoutButton.style.display = 'block';
+				gapi.client.drive.about({
+					'fields': "*"
+				}).then(function(resp) {
+					console.log(JSON.stringify(resp))	
+				}
 				listFiles();
 			} else {
 				authorizeButton.style.display = 'block';
@@ -229,15 +234,9 @@
 					'fileId': dc.url_file_id[i],
 					'fields': "name, id, mimeType, md5Checksum"
 				}).then(function(resp) {
-					console.log(resp)
 					var filename = resp.result.name;
 					var md5Checksum = resp.result.md5Checksum;
 					var mime = resp.result.mimeType;
-					
-					console.log(JSON.stringify(resp))
-					
-					alert(md5Checksum + ' ' + filename)
-					
 					if (md5Checksum) {
 						
 						appendPre(md5Checksum + ' ' + filename);
