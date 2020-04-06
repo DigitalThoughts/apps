@@ -115,7 +115,33 @@
 			var retrievePageOfFiles = function(request) {
 				
 				alert(request)
-				request.execute(function(resp) {
+				
+				request.then(function(resp) {
+					console.log(resp); //resp.body contains the string value of the file
+										var title = resp.title;
+					var md5Checksum = resp.md5Checksum;
+					var mime = resp.mimeType;
+					if (md5Checksum)
+						appendPre(md5Checksum + ' ' + title);
+					else {
+						if (mime == "application/vnd.google-apps.folder") {
+							md5Checksum = '--------------------------------';
+							var mParams = JSON.parse(PARAMS['state']);
+							mParams['ids'] = resp.id;
+							appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+						}
+					}
+					MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+					
+					
+					if (typeof callback === "function") callback(resp.body);
+				    }, function(error) {
+					console.error(error)
+				    })
+				    return request;
+				
+				
+				/*request.execute(function(resp) {
 					var title = resp.title;
 					var md5Checksum = resp.md5Checksum;
 					var mime = resp.mimeType;
@@ -130,7 +156,7 @@
 						}
 					}
 					MD5SUMS += md5Checksum + ' ' + title + '\r\n';
-				});
+				});*/
 			}
 			
 			for (var i = 0; i < dc.url_file_id.length; i++) {
