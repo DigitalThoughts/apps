@@ -43,14 +43,14 @@
 			z-index: 998;
 		}
 
-		#profileImageImg{
-		    min-height: 36px;
-		    max-height: 36px;
-		    cursor: default;
-		    padding-bottom: 6px;
-		    padding-left: 14px;
-		    padding-right: 14px;
-		    padding-top: 6px;	
+		#profileImageImg {
+			min-height: 36px;
+			max-height: 36px;
+			cursor: default;
+			padding-bottom: 6px;
+			padding-left: 14px;
+			padding-right: 14px;
+			padding-top: 6px;
 		}
 	</style>
 </head>
@@ -78,11 +78,11 @@
 				<span class="mdl-layout-title"><img style="width:1.5em" src="https://lh3.googleusercontent.com/hfjD1DbSCNnAPRKwTusNg8mk3ESsn3n4CGeC3M6ad7W_GLE_F8bjVYDqy2iD8SoDyN3jc9_1bzw=s50-h50-e365" /> &emsp;Drive Checksum</span><small>&emsp;by Darren D'Mello</small>
 				<div class="mdl-layout-spacer"></div>
 				<nav class="mdl-navigation mdl-layout--large-screen-only">
-				<button id="signout_button" style="display: none;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Sign Out</button>
-				<div id="profileImageDiv" class="profileImageDiv" onclick="swapAccounts();" style="cursor:pointer;">
-					<div id="profileName" class="profileName" style="display: none;" title=""></div>
-					<img id="profileImageImg" class="profileImageImg" src="https://lh6.googleusercontent.com/-UO4sQx_8saQ/AAAAAAAAAAI/AAAAAAAAJt0/AAKWJJOYXi3EUtu9wwpOZkqWLID1HzavJQ/s96-c/photo.jpg?size=72" alt="Google Account" title="Switch Google Account">
-				</div>
+					<button id="signout_button" style="display: none;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Sign Out</button>
+					<div id="profileImageDiv" class="profileImageDiv" onclick="swapAccounts();" style="cursor:pointer;">
+						<div id="profileName" class="profileName" style="display: none;" title=""></div>
+						<img id="profileImageImg" class="profileImageImg" src="https://lh6.googleusercontent.com/-UO4sQx_8saQ/AAAAAAAAAAI/AAAAAAAAJt0/AAKWJJOYXi3EUtu9wwpOZkqWLID1HzavJQ/s96-c/photo.jpg?size=72" alt="Google Account" title="Switch Google Account">
+					</div>
 				</nav>
 			</div>
 		</header>
@@ -92,7 +92,7 @@
 
 			<!--Add buttons to initiate auth sequence and sign out-->
 			<button id="authorize_button" style="display: none;margin:1%;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Authorize</button>
-			
+
 			<div id="suggest"><a href="https://gsuite.google.com/marketplace/app/drive_checksum/197544146915?pann=cwsdp&hl=en" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365" /></a></div>
 			<div class="mdl-tooltip" data-mdl-for="suggest">
 				Get full drive file paths with the sheets add-on.
@@ -159,31 +159,28 @@
 		function appendPre(message) {
 			$("#output").append(message + '<br />');
 		}
-		
-function findType(callback) {
-    if (!dc.url_file_id) {
-        alert('Open files using the Open with contextual menu from your Google Drive.');
-        stops();
-    }
 
-    var X = function(request) {
-        request.execute(function(resp) {
-            var mime = resp.mimeType;
-            if (mime == "application/vnd.google-apps.folder")
-                listFolders();
-            else
-                listFiles();
-        });
-    }
-    var initialRequest = gapi.client.drive.files.get({
-        'fileId': dc.url_file_id
-    });
-    X(initialRequest);
-}
-		
+		function findType(callback) {
+			if (!dc.url_file_id) {
+				alert('Open files using the Open with contextual menu from your Google Drive.');
+				stops();
+			}
+			var X = function(request) {
+				request.execute(function(resp) {
+					var mime = resp.mimeType;
+					if (mime == "application/vnd.google-apps.folder")
+						listFolders();
+					else
+						listFiles();
+				});
+			}
+			var initialRequest = gapi.client.drive.files.get({
+				'fileId': dc.url_file_id
+			});
+			X(initialRequest);
+		}
 		var authorizeButton = document.getElementById('authorize_button');
 		var signoutButton = document.getElementById('signout_button');
-		
 		/**
 		 *  On load, called to load the auth2 library and API client library.
 		 */
@@ -223,10 +220,9 @@ function findType(callback) {
 					'fields': "user"
 				}).then(function(resp) {
 					var obj = resp.result.user;
-					$("#profileImageImg").attr("src",obj.photoLink);
-					$("#profileName").attr("title",obj.displayName + " (" + obj.emailAddress + ")");
+					$("#profileImageImg").attr("src", obj.photoLink);
+					$("#profileName").attr("title", obj.displayName + " (" + obj.emailAddress + ")");
 					$("#profileName").html(obj.displayName);
-					
 				});
 				findType()
 				stop();
@@ -253,7 +249,6 @@ function findType(callback) {
 		 *
 		 * @param {string} message Text to be placed in pre element.
 		 */
-		
 		/**
 		 * Print files.
 		 */
@@ -267,10 +262,8 @@ function findType(callback) {
 					var md5Checksum = resp.result.md5Checksum;
 					var mime = resp.result.mimeType;
 					if (md5Checksum) {
-						
 						appendPre(md5Checksum + ' ' + filename);
-					}
-					else {
+					} else {
 						if (mime == "application/vnd.google-apps.folder") {
 							md5Checksum = '--------------------------------';
 							var mParams = JSON.parse(PARAMS['state']);
@@ -285,56 +278,45 @@ function findType(callback) {
 		}
 
 		function listFolders(callback) {
-			
-    var retrievePageOfFiles = function(request) {
-	    
-        request.then(function(resp) {
-		
-		console.log(JSON.stringify(resp))
-		
-		var obj = resp.result.files
-            for (i = 0; i < obj.length; i++) {
-                var filename = obj[i].name;
-                var md5Checksum = obj[i].md5Checksum;
+			var retrievePageOfFiles = function(request) {
+				request.then(function(resp) {
+					console.log(JSON.stringify(resp))
+					var obj = resp.result.files
+					for (i = 0; i < obj.length; i++) {
+						var filename = obj[i].name;
+						var md5Checksum = obj[i].md5Checksum;
+						if (md5Checksum)
+							appendPre(md5Checksum + ' ' + filename);
+						else {
+							md5Checksum = '--------------------------------';
+							var mParams = JSON.parse(PARAMS['state']);
+							mParams['ids'] = obj[i].id;
+							if (obj[i].mimeType == "application/vnd.google-apps.folder")
+								appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
+							else
+								appendPre(md5Checksum + ' ' + filename);
+						}
+						MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
+					}
+					var nextPageToken = resp.nextPageToken;
+					if (nextPageToken) {
+						request = gapi.client.drive.files.list({
+							'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+							'fields': "*",
+							'pageToken': nextPageToken
+						});
+						retrievePageOfFiles(request);
+					}
+				});
+			}
+			var initialRequest = gapi.client.drive.files.list({
+				'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+				'fields': "*"
+			});
+			retrievePageOfFiles(initialRequest);
+			stops();
+		}
 
-                if (md5Checksum)
-                    appendPre(md5Checksum + ' ' + filename);
-                else {
-                    md5Checksum = '--------------------------------';
-                    var mParams = JSON.parse(PARAMS['state']);
-                    mParams['ids'] = obj[i].id;
-
-                    if (obj[i].mimeType == "application/vnd.google-apps.folder")
-                        appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
-                    else
-                        appendPre(md5Checksum + ' ' + filename);
-
-                }
-                MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
-            }
-		
-		
-
-            var nextPageToken = resp.nextPageToken;
-            if (nextPageToken) {
-                request = gapi.client.drive.files.list({
-                    'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-			'fields': "*",
-                    'pageToken': nextPageToken
-                });
-                retrievePageOfFiles(request);
-            }
-        });
-    }
-
-    var initialRequest = gapi.client.drive.files.list({
-        'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-	    'fields': "*"
-    });
-    retrievePageOfFiles(initialRequest);
-    stops();
-}
-		
 		function getPlainText() {
 			var text = "";
 			if (typeof window.getSelection != "undefined") {
@@ -345,14 +327,12 @@ function findType(callback) {
 			return text;
 		}
 
-		function swapAccounts()
-		{
+		function swapAccounts() {
 			handleSignoutClick();
 			handleSignoutClick();
 			$('#output').html('');
-			
 		}
-		
+
 		function stops() {
 			$("#progress").remove();
 		}
