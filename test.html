@@ -103,20 +103,12 @@
        * Print files.
        */
       function listFiles() {
-        gapi.client.drive.files({
+        gapi.client.drive.files.get({
           'pageSize': 10,
-          'fields': "nextPageToken, files(id, name), md5Checksum, +originalFilename"
+          'fields': "nextPageToken, md5Checksum, +originalFilename"
         }).then(function(response) {
-          appendPre('Files:');
-          var files = response.result.files;
-          if (files && files.length > 0) {
-            for (var i = 0; i < files.length; i++) {
-              var file = files[i];
-              appendPre(file.name + ' (' + file.id + ')' + file.md5Checksum + " " + file.originalFilename);
-            }
-          } else {
-            appendPre('No files found.');
-          }
+          appendPre('Checksums:');
+          response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
         });
       }
 
