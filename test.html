@@ -201,7 +201,12 @@
 				gapi.client.drive.about.get({
 					'fields': "user"
 				}).then(function(resp) {
-					console.log(JSON.stringify(resp))	
+					console.log(JSON.stringify(resp))
+					var obj = resp.result.user;
+					$("#profileImageImg").attr("src",obj.photoLink);
+					$("#profileName").attr("title",obj.displayName + " (" + obj.emailAddress + ")");
+					$("#profileName").html(obj.displayName);
+					
 				});
 				listFiles();
 			} else {
