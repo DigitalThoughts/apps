@@ -1,301 +1,281 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-blue.min.css" />
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-      <script data-ad-client="ca-pub-8437075302836740" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <meta name="google-site-verification" content="GAtQ74U4IT4QuVydgibaAP2P5UUAbyUQcLEseSJXQR8" />
-	   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-	  <meta name="description" content="Compute md5 checksum of files from your Google Drive™ file/folders. Download as md5 checksums text file. It's fast & free to use tool." />
-	  <link rel='shortcut icon' type='image/x-icon' href='./assets/favicon.ico'/>
-	  <title>md5sum</title>
-    
-	  <style>
-a:link {
-    text-decoration: none;
-}
 
-a:visited {
-    text-decoration: none;
-}
+<head>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-blue.min.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script data-ad-client="ca-pub-8437075302836740" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<meta name="google-site-verification" content="GAtQ74U4IT4QuVydgibaAP2P5UUAbyUQcLEseSJXQR8" />
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<meta name="description" content="Compute md5 checksum of files from your Google Drive™ file/folders. Download as md5 checksums text file. It's fast & free to use tool." />
+	<link rel='shortcut icon' type='image/x-icon' href='./assets/favicon.ico' />
+	<title>Drive Checksum</title>
 
-a:hover {
-    text-decoration: underline;
-}
+	<style>
+		a:link {
+			text-decoration: none;
+		}
 
-a:active {
-    text-decoration: underline;
-}
+		a:visited {
+			text-decoration: none;
+		}
 
-#downloadmd5sum {
-	bottom:10%;
-	position:fixed;
-	right:8%;
-	z-index:998;
-}
+		a:hover {
+			text-decoration: underline;
+		}
 
-#suggest {
-	bottom:22%;
-	position:fixed;
-	right:8%;
-	z-index:998;
-}
-</style>    
-  </head>
-  
-  
-  
-  <body>
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" style="display: none;">Authorize</button>
-    <button id="signout_button" style="display: none;">Sign Out</button>
+		a:active {
+			text-decoration: underline;
+		}
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
+		#downloadmd5sum {
+			bottom: 10%;
+			position: fixed;
+			right: 8%;
+			z-index: 998;
+		}
 
-    <script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+		#suggest {
+			bottom: 22%;
+			position: fixed;
+			right: 8%;
+			z-index: 998;
+		}
+	</style>
+</head>
 
-  ga('create', 'UA-74329110-13', 'auto');
-  ga('send', 'pageview');
-      
-      
-      
-      // Client ID and API key from the Developer Console
-      var CLIENT_ID = '982370769845-4vdv6su1lgt6npf4l8qm14vat76odoo9.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyCktYeTRiqnUcBc9G5tBP0zTCQ0U3XeHWs';
+<body>
+	<!--Add buttons to initiate auth sequence and sign out-->
+	<button id="authorize_button" style="display: none;">Authorize</button>
+	<button id="signout_button" style="display: none;">Sign Out</button>
 
-      // Array of API discovery doc URLs for APIs used by the quickstart
-      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+	<pre id="content" style="white-space: pre-wrap;"></pre>
 
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
-var PARAMS = {};
-var MD5SUMS = '';
-var dc = {};
+	<script type="text/javascript">
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+		ga('create', 'UA-74329110-13', 'auto');
+		ga('send', 'pageview');
+		// Client ID and API key from the Developer Console
+		var CLIENT_ID = '982370769845-4vdv6su1lgt6npf4l8qm14vat76odoo9.apps.googleusercontent.com';
+		var API_KEY = 'AIzaSyCktYeTRiqnUcBc9G5tBP0zTCQ0U3XeHWs';
+		// Array of API discovery doc URLs for APIs used by the quickstart
+		var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+		// Authorization scopes required by the API; multiple scopes can be
+		// included, separated by spaces.
+		var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+		var PARAMS = {};
+		var MD5SUMS = '';
+		var dc = {};
+		"use strict";
+		// Auth stuff gets top priority as it can take a while....
+		var window_location_to_params_object = function() {
+			var match;
+			var pl = /\+/g; // Regex for replacing addition symbol with a space
+			var search = /([^&=]+)=?([^&]*)/g;
+			var decode = function(s) {
+				return decodeURIComponent(s.replace(pl, " "));
+			};
+			var query = window.location.search.substring(1);
+			var url_params = {};
+			while ((match = search.exec(query)) !== null)
+				url_params[decode(match[1])] = decode(match[2]);
+			PARAMS = url_params;
+			return url_params;
+		}
+		dc.url_file_id = (function() {
+			try {
+				var params = window_location_to_params_object();
+				return JSON.parse(params['state'])['ids'];
+			} catch (e) {
+				return undefined
+			}
+		})();
 
-"use strict";
-// Auth stuff gets top priority as it can take a while....
-var window_location_to_params_object = function() {
-    var match;
-    var pl = /\+/g; // Regex for replacing addition symbol with a space
-    var search = /([^&=]+)=?([^&]*)/g;
-    var decode = function(s) {
-        return decodeURIComponent(s.replace(pl, " "));
-    };
-    var query = window.location.search.substring(1);
-    var url_params = {};
-    while ((match = search.exec(query)) !== null)
-        url_params[decode(match[1])] = decode(match[2]);
-    PARAMS = url_params;
-    return url_params;
-}
+		function appendPre(message) {
+			$("#output").append(message + '<br />');
+		}
+		var authorizeButton = document.getElementById('authorize_button');
+		var signoutButton = document.getElementById('signout_button');
+		/**
+		 *  On load, called to load the auth2 library and API client library.
+		 */
+		function handleClientLoad() {
+			gapi.load('client:auth2', initClient);
+		}
+		/**
+		 *  Initializes the API client library and sets up sign-in state
+		 *  listeners.
+		 */
+		function initClient() {
+			gapi.client.init({
+				apiKey: API_KEY,
+				clientId: CLIENT_ID,
+				discoveryDocs: DISCOVERY_DOCS,
+				scope: SCOPES
+			}).then(function() {
+				// Listen for sign-in state changes.
+				gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+				// Handle the initial sign-in state.
+				updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+				authorizeButton.onclick = handleAuthClick;
+				signoutButton.onclick = handleSignoutClick;
+			}, function(error) {
+				appendPre(JSON.stringify(error, null, 2));
+			});
+		}
+		/**
+		 *  Called when the signed in status changes, to update the UI
+		 *  appropriately. After a sign-in, the API is called.
+		 */
+		function updateSigninStatus(isSignedIn) {
+			if (isSignedIn) {
+				authorizeButton.style.display = 'none';
+				signoutButton.style.display = 'block';
+				listFiles();
+			} else {
+				authorizeButton.style.display = 'block';
+				signoutButton.style.display = 'none';
+			}
+		}
+		/**
+		 *  Sign in the user upon button click.
+		 */
+		function handleAuthClick(event) {
+			gapi.auth2.getAuthInstance().signIn();
+		}
 
-dc.url_file_id = (function() {
-    try {
-        var params = window_location_to_params_object();
-        return JSON.parse(params['state'])['ids'];
-    } catch (e) {
-        return undefined
-    }
-})();
-      
-function appendPre(message) {
-    $("#output").append(message + '<br />');
-}
-      
-      var authorizeButton = document.getElementById('authorize_button');
-      var signoutButton = document.getElementById('signout_button');
+		/**
+		 *  Sign out the user upon button click.
+		 */
+		function handleSignoutClick(event) {
+			gapi.auth2.getAuthInstance().signOut();
+		}
 
-      /**
-       *  On load, called to load the auth2 library and API client library.
-       */
-      function handleClientLoad() {
-        gapi.load('client:auth2', initClient);
-      }
+		/**
+		 * Append a pre element to the body containing the given message
+		 * as its text node. Used to display the results of the API call.
+		 *
+		 * @param {string} message Text to be placed in pre element.
+		 */
 
-      /**
-       *  Initializes the API client library and sets up sign-in state
-       *  listeners.
-       */
-      function initClient() {
-        gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES
-        }).then(function () {
-          // Listen for sign-in state changes.
-          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+		/*function appendPre(message) {
+			var pre = document.getElementById('content');
+			var textContent = document.createTextNode(message + '\n');
+			pre.appendChild(textContent);
+		}*/
+		/**
+		 * Print files.
+		 */
 
-          // Handle the initial sign-in state.
-          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-          authorizeButton.onclick = handleAuthClick;
-          signoutButton.onclick = handleSignoutClick;
-        }, function(error) {
-          appendPre(JSON.stringify(error, null, 2));
-        });
-      }
+		/*function listFiles() {
+		  gapi.client.drive.files.get({
+		    'pageSize': 10,
+		    'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
+		    'fields': "md5Checksum, originalFilename"
+		  }).then(function(response) {
+		    appendPre('Checksums:');
+		    appendPre(response.result.md5Checksum + " *" + response.result.originalFilename)
+		    //response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
+		  });
+		}*/
 
-      /**
-       *  Called when the signed in status changes, to update the UI
-       *  appropriately. After a sign-in, the API is called.
-       */
-      function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-          authorizeButton.style.display = 'none';
-          signoutButton.style.display = 'block';
-          listFiles();
-        } else {
-          authorizeButton.style.display = 'block';
-          signoutButton.style.display = 'none';
-        }
-      }
+		function listFiles() {
+			for (var i = 0; i < dc.url_file_id.length; i++) {
+				gapi.client.drive.files.get({
+					'fileId': dc.url_file_id[i],
+					'fields': "name, id, mimeType, md5Checksum"
+				}).then(function(resp) {
+					console.log(JSON.stringify(resp))
+					var filename = resp.name;
+					var md5Checksum = resp.md5Checksum;
+					var mime = resp.mimeType;
+					if (md5Checksum)
+						appendPre(md5Checksum + ' ' + filename);
+					else {
+						if (mime == "application/vnd.google-apps.folder") {
+							md5Checksum = '--------------------------------';
+							var mParams = JSON.parse(PARAMS['state']);
+							mParams['ids'] = resp.id;
+							appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
+						}
+					}
+					MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
+				});
+			}
+			stops();
+		}
 
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick(event) {
-        gapi.auth2.getAuthInstance().signIn();
-      }
+		function getPlainText() {
+			var text = "";
+			if (typeof window.getSelection != "undefined") {
+				text = $('#output').text();
+				var download = document.getElementById('downloadmd5sum');
+				download.href = 'data:text/plain;charset:utf-8,' + encodeURIComponent(MD5SUMS);
+			}
+			return text;
+		}
 
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick(event) {
-        gapi.auth2.getAuthInstance().signOut();
-      }
+		function stops() {
+			$("#progress").remove();
+		}
+	</script>
+	<style>
+		.mdl-layout__header {
+			color: #505050;
+		}
 
-      /**
-       * Append a pre element to the body containing the given message
-       * as its text node. Used to display the results of the API call.
-       *
-       * @param {string} message Text to be placed in pre element.
-       */
-      function appendPre(message) {
-        var pre = document.getElementById('content');
-        var textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-      }
+		.mdl-layout__header-row {
+			padding: 0 40px;
+			background-color: #f5f5f5;
+		}
 
-      /**
-       * Print files.
-       */
-      /*function listFiles() {
-        gapi.client.drive.files.get({
-          'pageSize': 10,
-          'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
-          'fields': "md5Checksum, originalFilename"
-        }).then(function(response) {
-          appendPre('Checksums:');
-          appendPre(response.result.md5Checksum + " *" + response.result.originalFilename)
-          //response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
-        });
-      }*/
-      
-      function listFiles() {
-        for (var i = 0; i < dc.url_file_id.length; i++) {
-          gapi.client.drive.files.get({
-            'fileId': dc.url_file_id[i],
-            'fields': "name, id, mimeType, md5Checksum"
-          }).then(function(resp) {
-            console.log(JSON.stringify(resp))
-            
-            var filename = resp.name;
-            var md5Checksum = resp.md5Checksum;
-            var mime = resp.mimeType;
-            
-            if (md5Checksum)
-              appendPre(md5Checksum + ' ' + filename);
-            else {
-              if (mime == "application/vnd.google-apps.folder") {
-                md5Checksum = '--------------------------------';
-                var mParams = JSON.parse(PARAMS['state']);
-                mParams['ids'] = resp.id;
-                appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
-              }
-            }
-            MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
-        });
-        }
-        stops();
-      }
-      
-function getPlainText() {
-    var text = "";
-    if (typeof window.getSelection != "undefined") {
-        text = $('#output').text();
-        var download = document.getElementById('downloadmd5sum');
-        download.href = 'data:text/plain;charset:utf-8,' + encodeURIComponent(MD5SUMS);
-    }
-    return text;
-}
+		.mdl-layout.has-drawer .mdl-layout__header-row {
+			padding: 0 40px 0 80px;
+		}
+	</style>
 
-function stops() {
-    $("#progress").remove();
-}      
-      
-      
+	<div class="mdl-layout mdl-js-layout">
+		<header class="mdl-layout__header">
+			<div class="mdl-layout__header-row">
 
-    </script>
-<style>
+				<span class="mdl-layout-title"><img style="width:1.5em" src="https://lh3.googleusercontent.com/hfjD1DbSCNnAPRKwTusNg8mk3ESsn3n4CGeC3M6ad7W_GLE_F8bjVYDqy2iD8SoDyN3jc9_1bzw=s50-h50-e365" /> &emsp;Drive Checksum</span>
+				<div class="mdl-layout-spacer"></div>
+				<nav class="mdl-navigation mdl-layout--large-screen-only">
+					<span>by Darren D'Mello</span>
+				</nav>
+			</div>
+		</header>
+		<main class="mdl-layout__content">
 
-.mdl-layout__header {
-  color: #505050;
-}
+			<div id="progress" style="width:100%;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
 
-.mdl-layout__header-row {
-	padding: 0 40px;
-	background-color: #f5f5f5;
-}
+			<div id="suggest"><a href="https://chrome.google.com/webstore/detail/drive-checksum/mcljolpofjcpckhnncpojbahnikjlebf" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365" /></a></div>
+			<div class="mdl-tooltip" data-mdl-for="suggest">
+				Get full drive file paths with the sheets add-on.
+			</div>
+			<pre id="output"></pre>
 
-.mdl-layout.has-drawer .mdl-layout__header-row {
-  padding: 0 40px 0 80px;
-}
+			<a download="md5sum.txt" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" id="downloadmd5sum" onclick="getPlainText();">
+				<i id="download" class="material-icons">file_download</i>
+			</a>
 
-</style>
+		</main>
 
-    <div class="mdl-layout mdl-js-layout">
-  <header class="mdl-layout__header">
-    <div class="mdl-layout__header-row">
+	</div>
 
-      <span class="mdl-layout-title"><img style="width:1.5em"  src="https://lh3.googleusercontent.com/hfjD1DbSCNnAPRKwTusNg8mk3ESsn3n4CGeC3M6ad7W_GLE_F8bjVYDqy2iD8SoDyN3jc9_1bzw=s50-h50-e365"/> &emsp;Drive Checksum</span>
-      <div class="mdl-layout-spacer"></div>
-      <nav class="mdl-navigation mdl-layout--large-screen-only">
-	      <span>by Darren D'Mello</span>
-      </nav>
-    </div>
-  </header>
-  <main class="mdl-layout__content">
+	<script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()">
+	</script>
+</body>
 
-  		<div id="progress" style="width:100%;"  class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-
-
-<div id="suggest"><a href="https://chrome.google.com/webstore/detail/drive-checksum/mcljolpofjcpckhnncpojbahnikjlebf" target="_blank"><img src="https://lh3.googleusercontent.com/MJqG9XRvSup9BRB7NxnLjHmcQk0OW4ZyOwnnMTs_C-_ImvQ-wsU83RTjOU_5Tm8hMxkXt_pHSg=s50-h50-e365"/></a></div>
-<div class="mdl-tooltip" data-mdl-for="suggest">
-Get full drive file paths with the sheets add-on.
-</div>
-      <pre id="output"></pre>
-
-
-<a download="md5sum.txt" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" id="downloadmd5sum" onclick="getPlainText();">
-  <i id="download" class="material-icons">file_download</i>
-</a>
-
-</main>
-  
-
-  
-</div>
-
-    
-    <script async defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};handleClientLoad()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()">
-    </script>
-  </body>
 </html>
