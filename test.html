@@ -222,10 +222,22 @@ function appendPre(message) {
             MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
         });
         }
-        //stops();
+        stops();
       }
       
-      
+function getPlainText() {
+    var text = "";
+    if (typeof window.getSelection != "undefined") {
+        text = $('#output').text();
+        var download = document.getElementById('downloadmd5sum');
+        download.href = 'data:text/plain;charset:utf-8,' + encodeURIComponent(MD5SUMS);
+    }
+    return text;
+}
+
+function stops() {
+    $("#progress").remove();
+}      
       
       
 
