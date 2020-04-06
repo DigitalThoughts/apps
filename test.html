@@ -183,7 +183,7 @@
 			if (isSignedIn) {
 				authorizeButton.style.display = 'none';
 				signoutButton.style.display = 'block';
-				gapi.client.drive.about({
+				gapi.client.drive.about.get({
 					'fields': "*"
 				}).then(function(resp) {
 					console.log(JSON.stringify(resp))	
