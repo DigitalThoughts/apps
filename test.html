@@ -225,11 +225,11 @@
 					$("#profileName").html(obj.displayName);
 				});
 				findType()
-				stop();
 			} else {
 				authorizeButton.style.display = 'block';
 				signoutButton.style.display = 'none';
 			}
+			stop();
 		}
 		/**
 		 *  Sign in the user upon button click.
