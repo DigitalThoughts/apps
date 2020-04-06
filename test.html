@@ -291,9 +291,11 @@ function findType(callback) {
         request.then(function(resp) {
 		console.log(JSON.stringify(resp))
 		
-            for (i = 0; i < resp.items.length; i++) {
-                var filename = resp.items[i].name;
-                var md5Checksum = resp.items[i].md5Checksum;
+		var obj = resp.result.files
+		
+            for (i = 0; i < obj.length; i++) {
+                var filename = obj[i].name;
+                var md5Checksum = obj[i].md5Checksum;
 
                 if (md5Checksum)
                     appendPre(md5Checksum + ' ' + filename);
