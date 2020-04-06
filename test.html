@@ -289,6 +289,9 @@ function findType(callback) {
     var retrievePageOfFiles = function(request) {
 	    
         request.then(function(resp) {
+		
+		console.log(JSON.stringify(resp))
+		
 		var obj = resp.result.files
             for (i = 0; i < obj.length; i++) {
                 var filename = obj[i].name;
@@ -316,7 +319,7 @@ function findType(callback) {
             if (nextPageToken) {
                 request = gapi.client.drive.files.list({
                     'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-			'fields': "name, id, mimeType, md5Checksum",
+			'fields': "id, mimeType, md5Checksum",
                     'pageToken': nextPageToken
                 });
                 retrievePageOfFiles(request);
@@ -326,7 +329,7 @@ function findType(callback) {
 
     var initialRequest = gapi.client.drive.files.list({
         'q': '\'' + dc.url_file_id + '\'' + ' in parents',
-	    'fields': "name, id, mimeType, md5Checksum"
+	    'fields': "id, mimeType, md5Checksum"
     });
     retrievePageOfFiles(initialRequest);
     stops();
