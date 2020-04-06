@@ -111,6 +111,7 @@
 		}
 
 		function makeRequestfile(callback) {
+			alert("makeRequestfile")
 			var retrievePageOfFiles = function(request) {
 				request.execute(function(resp) {
 					var title = resp.title;
@@ -139,6 +140,7 @@
 		}
 
 		function makeRequestfolder(callback) {
+			alert("makeRequestfile")
 			var retrievePageOfFiles = function(request) {
 				request.execute(function(resp) {
 					for (i = 0; i < resp.items.length; i++) {
