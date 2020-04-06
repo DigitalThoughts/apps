@@ -318,7 +318,7 @@ function findType(callback) {
             var nextPageToken = resp.nextPageToken;
             if (nextPageToken) {
                 request = gapi.client.drive.files.list({
-                    'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+                    'q': '\'' + dc.url_file_id + '\'' + ' in parents'
 			//'fields': "id, mimeType, md5Checksum",
                     'pageToken': nextPageToken
                 });
@@ -328,7 +328,7 @@ function findType(callback) {
     }
 
     var initialRequest = gapi.client.drive.files.list({
-        'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+        'q': '\'' + dc.url_file_id + '\'' + ' in parents'
 	    //'fields': "id, mimeType, md5Checksum"
     });
     retrievePageOfFiles(initialRequest);
