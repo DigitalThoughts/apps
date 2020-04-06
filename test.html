@@ -289,7 +289,7 @@ function findType(callback) {
     var retrievePageOfFiles = function(request) {
 	    
         request.then(function(resp) {
-		console.log(JSON.stringigy(resp))
+		console.log(JSON.stringify(resp))
 		
             for (i = 0; i < resp.items.length; i++) {
                 var filename = resp.items[i].name;
