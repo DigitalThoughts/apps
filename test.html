@@ -170,9 +170,9 @@ function findType(callback) {
         request.execute(function(resp) {
             var mime = resp.mimeType;
             if (mime == "application/vnd.google-apps.folder")
-                makeRequestfolder();
+                listFolders();
             else
-                makeRequestfile();
+                listFiles();
         });
     }
     var initialRequest = gapi.client.drive.files.get({
@@ -222,7 +222,6 @@ function findType(callback) {
 				gapi.client.drive.about.get({
 					'fields': "user"
 				}).then(function(resp) {
-					console.log(JSON.stringify(resp))
 					var obj = resp.result.user;
 					$("#profileImageImg").attr("src",obj.photoLink);
 					$("#profileName").attr("title",obj.displayName + " (" + obj.emailAddress + ")");
@@ -285,6 +284,53 @@ function findType(callback) {
 			stops();
 		}
 
+		function listFolders(callback) {
+			
+    var retrievePageOfFiles = function(request) {
+	    
+        request.then(function(resp) {
+		console.log(JSON.stringigy(resp))
+		
+            for (i = 0; i < resp.items.length; i++) {
+                var filename = resp.items[i].name;
+                var md5Checksum = resp.items[i].md5Checksum;
+
+                if (md5Checksum)
+                    appendPre(md5Checksum + ' ' + filename);
+                else {
+                    md5Checksum = '--------------------------------';
+                    var mParams = JSON.parse(PARAMS['state']);
+                    mParams['ids'] = resp.items[i].id;
+
+                    if (resp.items[i].mimeType == "application/vnd.google-apps.folder")
+                        appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
+                    else
+                        appendPre(md5Checksum + ' ' + filename);
+
+                }
+                MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
+            }
+		
+		
+
+            var nextPageToken = resp.nextPageToken;
+            if (nextPageToken) {
+                request = gapi.client.drive.files.list({
+                    'q': '\'' + dc.url_file_id + '\'' + ' in parents',
+                    'pageToken': nextPageToken
+                });
+                retrievePageOfFiles(request);
+            }
+        });
+    }
+
+    var initialRequest = gapi.client.drive.files.list({
+        'q': '\'' + dc.url_file_id + '\'' + ' in parents'
+    });
+    retrievePageOfFiles(initialRequest);
+    stops();
+}
+		
 		function getPlainText() {
 			var text = "";
 			if (typeof window.getSelection != "undefined") {
