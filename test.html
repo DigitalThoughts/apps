@@ -163,7 +163,7 @@ dc.url_file_id = (function() {
                 md5Checksum = '--------------------------------';
                 var mParams = JSON.parse(PARAMS['state']);
                 mParams['ids'] = resp.id;
-                appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+                appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
               }
             }
             MD5SUMS += md5Checksum + ' ' + title + '\r\n';
