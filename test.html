@@ -223,18 +223,24 @@
 		    //response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
 		  });
 		}*/
+		
 		function listFiles() {
 			for (var i = 0; i < dc.url_file_id.length; i++) {
 				gapi.client.drive.files.get({
 					'fileId': dc.url_file_id[i],
 					'fields': "name, id, mimeType, md5Checksum"
 				}).then(function(resp) {
-					console.log(JSON.stringify(resp))
+					
 					var filename = resp.name;
 					var md5Checksum = resp.md5Checksum;
 					var mime = resp.mimeType;
+					
+					console.log(JSON.stringify(resp))
+					
+					alert(md5Checksum + ' ' + filename)
+					
 					if (md5Checksum) {
-						alert(md5Checksum + ' ' + filename)
+						
 						appendPre(md5Checksum + ' ' + filename);
 					}
 					else {
