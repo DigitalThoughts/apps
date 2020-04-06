@@ -102,7 +102,7 @@
       /**
        * Print files.
        */
-      function listFiles() {
+      /*function listFiles() {
         gapi.client.drive.files.get({
           'pageSize': 10,
           'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
@@ -112,8 +112,64 @@
           appendPre(response.result.md5Checksum + " *" + response.result.originalFilename)
           //response.files.map(function (file) { return (file.md5Checksum + " *" + file.originalFilename); }).join("\r\n");
         });
-      }
+      }*/
+      
+      function listFiles() {
+        var retrievePageOfFiles = function(request) {
+          request.execute(function(resp) {
+            var title = resp.title;
+            var md5Checksum = resp.md5Checksum;
+            var mime = resp.mimeType;
+            if (md5Checksum)
+              appendPre(md5Checksum + ' ' + title);
+            else {
+              if (mime == "application/vnd.google-apps.folder") {
+                md5Checksum = '--------------------------------';
+                var mParams = JSON.parse(PARAMS['state']);
+                mParams['ids'] = resp.id;
+                appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+              }
+            }
+            MD5SUMS += md5Checksum + ' ' + title + '\r\n';
+          });
+        }
+        
+        
+        for (var i = 0; i < dc.url_file_id.length; i++) {
+          gapi.client.drive.files.get({
+            'fileId': dc.url_file_id[i]
+            'fileId': '1Y3LtswMtWSaTPC-E_v1HouX5LMfDrPVf',
+            'fields': "*"
+          }).then(function(resp) {
 
+            console.log(JSON.stringify(resp))
+            
+            /*var title = resp.title;
+            var md5Checksum = resp.md5Checksum;
+            var mime = resp.mimeType;
+            if (md5Checksum)
+              appendPre(md5Checksum + ' ' + title);
+            else {
+              if (mime == "application/vnd.google-apps.folder") {
+                md5Checksum = '--------------------------------';
+                var mParams = JSON.parse(PARAMS['state']);
+                mParams['ids'] = resp.id;
+                appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + title + '</a>');
+              }
+            }
+            MD5SUMS += md5Checksum + ' ' + title + '\r\n';*/
+            
+          appendPre('Checksums:');
+          //appendPre(resp.result.md5Checksum + " *" + resp.result.originalFilename)
+
+        });
+          
+          
+        }
+        stops();
+      }
+      
+      
       
       
 
