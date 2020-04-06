@@ -229,8 +229,8 @@
 				gapi.client.drive.files.get({
 					'fileId': dc.url_file_id[i],
 					'fields': "name, id, mimeType, md5Checksum"
-				}).then(function(resp) {
-					
+				}).then(function(response) {
+					var resp = JSON.parse(response)
 					var filename = resp.name;
 					var md5Checksum = resp.md5Checksum;
 					var mime = resp.mimeType;
