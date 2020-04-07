@@ -231,7 +231,7 @@
 		function findType(callback) {
 			if (!dc.url_file_id) {
 				alert('Open files using the Open with contextual menu from your Google Drive.');
-				$("#about").click();
+				window.location = window.location + "#features";
 				stops();
 			}
 			var X = function(request) {
@@ -323,6 +323,7 @@
 		 * Print files.
 		 */
 		function listFiles() {
+			if(dc.url_file_id)
 			for (var i = 0; i < dc.url_file_id.length; i++) {
 				gapi.client.drive.files.get({
 					'fileId': dc.url_file_id[i],
