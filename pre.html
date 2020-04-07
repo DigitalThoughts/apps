@@ -89,8 +89,8 @@
 					<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="btn2">
 						<i class="material-icons">more_vert</i>
 					</button>
-					<ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="btn2">
-						<li class="mdl-menu__item" id="signout_button">Sign Out</li>&emsp;
+					<ul id="signout_button_menu" class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="btn2">
+						<li class="mdl-menu__item" id="signout_button">Sign Out</li>
 					</ul>
 				</section>
 
@@ -279,7 +279,7 @@
 		function updateSigninStatus(isSignedIn) {
 			if (isSignedIn) {
 				authorizeButton.style.display = 'none';
-				$("#signout_button").show();
+				$("#signout_button, #signout_button_menu").show();
 				gapi.client.drive.about.get({
 					'fields': "user"
 				}).then(function(resp) {
@@ -291,7 +291,7 @@
 				findType()
 			} else {
 				authorizeButton.style.display = 'block';
-				$("#signout_button").hide();
+				$("#signout_button, #signout_button_menu").hide();
 				stops();
 			}
 		}
