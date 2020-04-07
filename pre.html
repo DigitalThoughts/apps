@@ -45,7 +45,7 @@
 			z-index: 900;
 		}
 	</style>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script data-ad-client="ca-pub-8437075302836740" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
@@ -67,7 +67,7 @@
 			<div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
 				<a href="#overview" id="home" class="mdl-layout__tab is-active">Home</a>
 				<a href="#features" id="about" class="mdl-layout__tab">About</a>
-				<button onclick="window.open('https://drive.google.com/drive/folders'+(dc.url_file_id?'/'+dc.url_file_id:''))" id="add" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">				
+				<button onclick="window.open('https://drive.google.com/drive/folders'+(dc.url_file_id?'/'+dc.url_file_id:''))" id="add" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">
 					<i class="material-icons" role="presentation">folder_open</i>
 					<span class="visuallyhidden">Open Drive folder</span>
 				</button>
@@ -158,7 +158,8 @@
 					<div class="mdl-mega-footer--drop-down-section">
 						<input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
 						<h1 class="mdl-mega-footer--heading">Need an app to be customized?</h1>
-						<div>Need an add-on? script or webapp using Google technologies apps script. <a target="_blank" href="https://www.digitalthoughts.science/contact">Contact me</a>!<p>I develop add-ons, scripts using Apps Script technologies that make your business processes faster and easier.</p></div>
+						<div>Need an add-on? script or webapp using Google technologies apps script. <a target="_blank" href="https://www.digitalthoughts.science/contact">Contact me</a>!<p>I develop add-ons, scripts using Apps Script technologies that make your business processes faster and easier.</p>
+						</div>
 					</div>
 				</div>
 				<div class="mdl-mega-footer--bottom-section">
@@ -225,14 +226,14 @@
 		})();
 
 		function appendPre(message) {
-			$("#output").append('<div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">'+message+'</div>');
+			$("#output").append('<div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">' + message + '</div>');
 		}
 
 		function findType(callback) {
 			if (!dc.url_file_id) {
 				alert('Open files using the Open with contextual menu from your Google Drive.');
-				    $('#home, #overview').removeClass('is-active');
-				    $('#about, #features').addClass('is-active');
+				$('#home, #overview').removeClass('is-active');
+				$('#about, #features').addClass('is-active');
 				stops();
 			}
 			var X = function(request) {
@@ -324,28 +325,28 @@
 		 * Print files.
 		 */
 		function listFiles() {
-			if(dc.url_file_id)
-			for (var i = 0; i < dc.url_file_id.length; i++) {
-				gapi.client.drive.files.get({
-					'fileId': dc.url_file_id[i],
-					'fields': "name, id, mimeType, md5Checksum"
-				}).then(function(resp) {
-					var filename = resp.result.name;
-					var md5Checksum = resp.result.md5Checksum;
-					var mime = resp.result.mimeType;
-					if (md5Checksum) {
-						appendPre(md5Checksum + ' ' + filename);
-					} else {
-						if (mime == "application/vnd.google-apps.folder") {
-							md5Checksum = '--------------------------------';
-							var mParams = JSON.parse(PARAMS['state']);
-							mParams['ids'] = resp.id;
-							appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
+			if (dc.url_file_id)
+				for (var i = 0; i < dc.url_file_id.length; i++) {
+					gapi.client.drive.files.get({
+						'fileId': dc.url_file_id[i],
+						'fields': "name, id, mimeType, md5Checksum"
+					}).then(function(resp) {
+						var filename = resp.result.name;
+						var md5Checksum = resp.result.md5Checksum;
+						var mime = resp.result.mimeType;
+						if (md5Checksum) {
+							appendPre(md5Checksum + ' ' + filename);
+						} else {
+							if (mime == "application/vnd.google-apps.folder") {
+								md5Checksum = '--------------------------------';
+								var mParams = JSON.parse(PARAMS['state']);
+								mParams['ids'] = resp.id;
+								appendPre(md5Checksum + ' <a href=\'?state=' + JSON.stringify(mParams) + '\'>' + filename + '</a>');
+							}
 						}
-					}
-					MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
-				});
-			}
+						MD5SUMS += md5Checksum + ' ' + filename + '\r\n';
+					});
+				}
 			stops();
 		}
 
