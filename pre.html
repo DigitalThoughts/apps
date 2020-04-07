@@ -64,7 +64,7 @@
 			<div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
 				<a href="#overview" class="mdl-layout__tab is-active">Overview</a>
 				<a href="#features" class="mdl-layout__tab">About</a>
-				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent" id="add">
+				<button id="add" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">				
 					<i class="material-icons" role="presentation">add</i>
 					<span class="visuallyhidden">Add</span>
 				</button>
@@ -79,8 +79,9 @@
 					<div class="mdl-card mdl-cell mdl-cell--12-col">
 						<div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
 							<h4 class="mdl-cell mdl-cell--12-col">MD5 hashes</h4>
-										<div id="progress" style="width:100%;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-							<h4 class="mdl-cell mdl-cell--12-col"><button id="authorize_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Authorize</button></h4>
+							<h4 class="mdl-cell mdl-cell--12-col"><button id="authorize_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Authorize</button>&emsp;<button id="signout_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Sign Out</button></h4>
+							<div id="progress" style="width:100%;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+							<h4 class="mdl-cell mdl-cell--12-col">Sign out</h4>
 
 <pre id="output"></pre>
 
