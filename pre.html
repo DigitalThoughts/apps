@@ -231,8 +231,8 @@
 		function findType(callback) {
 			if (!dc.url_file_id) {
 				alert('Open files using the Open with contextual menu from your Google Drive.');
-				$("#home").removeClass("is-active");
-				$("#about").addClass("is-active");
+				    $('#home, #overview').removeClass('is-active');
+				    $('#about, #features').addClass('is-active');
 				stops();
 			}
 			var X = function(request) {
