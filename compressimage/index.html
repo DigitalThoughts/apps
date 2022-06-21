@@ -1,0 +1,920 @@
+	<!DOCTYPE html>
+	<html lang="en">
+
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="x-ua-compatible" content="ie=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	    <meta name="description" content="Compress and Resize your Google Drive images.">
+	    <meta name="author" content="Compress Image and Resize">
+	    <title>Compressor.js</title>
+
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4/dist/css/bootstrap.min.css" crossorigin="anonymous">
+	    <script defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+	    <script defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+	</head>
+
+	<body>
+
+	<style>
+	.modal {
+	  display: none; /* Hidden by default */
+	  position: fixed; /* Stay in place */
+	  z-index: 1; /* Sit on top */
+	  padding-top: 100px; /* Location of the box */
+	  left: 0;
+	  top: 0;
+	  width: 100%; /* Full width */
+	  height: 100%; /* Full height */
+	  overflow: auto; /* Enable scroll if needed */
+	  background-color: rgb(0,0,0); /* Fallback color */
+	  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content */
+	.modal-content {
+	    margin: auto;
+	    width: 250px;
+	    position: fixed;
+	    top: 50%;
+	    left: 40%;
+	    background: transparent;
+	    border: #c0c0c0 0px solid;
+	}
+	</style>
+	<div id="signinModal" class="modal">
+	  <div class="modal-content" id="modelContent">
+		<img id="cl1" onclick='clickSignIn();' src="https://github.com/DigitalThoughts/apps/blob/master/compressimages/assets/btn_google_signin_light_normal_web@2x.png?raw=true" />
+	  </div>
+	</div>
+	<script>
+			function clickSignIn() {
+			tokenClient.requestAccessToken({prompt: ""})
+		        document.getElementById("modelContent").innerHTML = '<div style="color:#fff;left: 50%;" class="spinner-border spinner-border-xs" role="status"><span class="sr-only">Loading...</span></div>'
+		}
+	
+		var modal = document.getElementById("signinModal");
+
+		var y = null;
+		var ImageIsFromDrive = false;
+		// so btn to update file on drive if it is true
+
+		//parse params
+		var dc = {};
+		var window_location_to_params_object = function() {
+		    var match;
+		    var pl = /\+/g; // Regex for replacing addition symbol with a space
+		    var search = /([^&=]+)=?([^&]*)/g;
+		    var decode = function(s) {
+		        return decodeURIComponent(s.replace(pl, " "));
+		    };
+		    var query = window.location.search.substring(1);
+		    var url_params = {};
+		    while ((match = search.exec(query)) !== null)
+		        url_params[decode(match[1])] = decode(match[2]);
+		    PARAMS = url_params;
+		    return url_params;
+		}
+
+		dc.url_file_id = (function() {
+		    try {
+		        var params = window_location_to_params_object();
+		        if(JSON.parse(params['state'])['ids'] != "") 
+		         modal.style.display = "block";
+
+		        return JSON.parse(params['state'])['ids'];
+		    } catch (e) {
+		        return undefined
+		    }
+		})();
+
+		window.addEventListener('DOMContentLoaded', function() {
+		    var Vue = window.Vue;
+		    var URL = window.URL || window.webkitURL;
+		    var XMLHttpRequest = window.XMLHttpRequest;
+		    var Compressor = window.Compressor;
+		    Vue.component('VueCompareImage', window.vueCompareImage);
+
+
+		    y = new Vue({
+		        el: '#app',
+
+		        data: function() {
+
+		            var vm = this;
+
+		            return {
+		                options: {
+		                    strict: true,
+		                    checkOrientation: true,
+		                    maxWidth: undefined,
+		                    maxHeight: undefined,
+		                    minWidth: 0,
+		                    minHeight: 0,
+		                    width: undefined,
+		                    height: undefined,
+		                    resize: 'none',
+		                    quality: 0.8,
+		                    mimeType: '',
+		                    convertTypes: 'image/png',
+		                    convertSize: 0,
+		                    success: function(result) {
+
+
+
+
+		                        if (URL) {
+		                            vm.outputURL = URL.createObjectURL(result);
+		                        }
+
+		                        vm.output = result;
+
+		                        vm.$refs.input.value = '';
+		                    },
+		                    error: function(err) {
+		                        window.alert(err.message);
+		                    },
+		                },
+		                inputURL: '',
+		                outputURL: '',
+		                input: {},
+		                output: {},
+		            };
+		        },
+
+		        filters: {
+		            prettySize: function(size) {
+		                var kilobyte = 1024;
+		                var megabyte = kilobyte * kilobyte;
+
+		                if (size > megabyte) {
+		                    return (size / megabyte).toFixed(2) + ' MB';
+		                } else if (size > kilobyte) {
+		                    return (size / kilobyte).toFixed(2) + ' KB';
+		                } else if (size >= 0) {
+		                    return size + ' B';
+		                }
+
+		                return 'N/A';
+		            },
+		        },
+
+		        methods: {
+		            compress: function(file, fileId = null) {
+
+		                if (!file) {
+		                    return;
+		                }
+
+
+		                if (URL) {
+		                    this.inputURL = URL.createObjectURL(file);
+		                }
+		                if (fileId !== null) {
+		                    file.fileIdFromDrive = fileId;
+		                }
+		                this.input = file;
+		                new Compressor(file, this.options);
+		            },
+
+		            change: function(e) {
+		                this.compress(e.target.files ? e.target.files[0] : null);
+		            },
+
+		            dragover: function(e) {
+
+		                e.preventDefault();
+		            },
+
+		            drop: function(e) {
+
+		                e.preventDefault();
+		                this.compress(e.dataTransfer.files ? e.dataTransfer.files[0] : null);
+		            },
+		            upload: function() {
+		                createFileOndrive()
+		            },
+		            overwrite: function() {
+		                updateFile()
+		            },
+		            signOut: function() {
+		                this.input.parent = undefined
+		                this.compress(this.input)
+
+		            }
+
+		        },
+
+		        watch: {
+		            options: {
+		                deep: true,
+		                handler: function() {
+		                    this.compress(this.input);
+
+		                },
+		            },
+		        },
+
+		        mounted: function() {
+		            if (!XMLHttpRequest) {
+		                return;
+		            }
+
+		            var vm = this;
+		            var xhr = new XMLHttpRequest();
+
+		            xhr.onload = function() {
+		                var blob = xhr.response;
+		                var date = new Date();
+
+		                blob.lastModified = date.getTime();
+		                blob.lastModifiedDate = date;
+		                blob.name = 'image.jpg';
+
+		                vm.compress(blob)
+		            };
+		            xhr.open('GET', 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg');
+		            xhr.responseType = 'blob';
+		            xhr.send();
+		        },
+		    });
+
+		});
+	    </script>
+
+	    <header class="navbar navbar-light navbar-expand-md">
+		<div class="container">
+		    <a class="navbar-brand" href="./">Image Resizer & Compressor</a>
+		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+		        <span class="navbar-toggler-icon"></span>
+		    </button>
+		    <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse" role="navigation">
+		        <ul class="nav navbar-nav">
+		            <li class="nav-item">
+		                <a class="nav-link" href="https://drive.google.com/drive">My Google Drive</a>
+		            </li>
+		            <li class="nav-item dropdown">
+		                <a class="nav-link" href="#" title="About the author">About</a>
+		            </li>
+		        </ul>
+		    </div>
+		</div>
+	    </header>
+
+	    <div class="container">
+		<hr>
+		<div id="app" v-cloak>
+		    <div class="card-body">
+		        <button id="authorize_button" onclick="handleAuthClick()" class="btn btn-primary"><img src="https://zipextractor.app/images/drive-main.svg"> <span id="textOf_authorize_button">Open Image from Google Drive</span></button>
+		        <button class="btn btn-primary" onclick="handleSignoutClick()" id="signout_button">Sign out</button>
+
+		    </div>
+		    <div class="card bg-light mb-4" @change="change" @dragover="dragover" @drop="drop">
+		        <div class="card-body">
+		            <div class="p-5 text-center">Drop image here or <label class="text-primary">browse... <input type="file" class="sr-only" id="file" accept="image/*" ref="input"></label></div>
+		        </div>
+		    </div>
+
+		    <div class="row">
+		        <div class="col-lg-4 mb-4">
+		            <div class="card h-100">
+		                <h4 class="card-header">Options</h4>
+		                <div class="card-body">
+		                    <fieldset class="form-group">
+		                        <div class="form-check form-check-inline" title="Indicates whether to output the original image instead of the compressed one when the size of the compressed image is greater than the original one's, except the following cases:
+
+	The mimeType option is set and its value is different from the mime type of the image.
+	The width option is set and its value is greater than the natural width of the image.
+	The height option is set and its value is greater than the natural height of the image.
+	The minWidth option is set and its value is greater than the natural width of the image.
+	The minHeight option is set and its value is greater than the natural height of the image.
+	The maxWidth option is set and its value is less than the natural width of the image.
+	The maxHeight option is set and its value is less than the natural height of the image.">
+		                            <input type="checkbox" name="strict" class="form-check-input" id="inputStrict" v-model="options.strict">
+		                            <label class="form-check-label" for="inputStrict">Strict</label>
+		                        </div>
+		                    </fieldset>
+		                    <fieldset class="form-group">
+		                        <div title="Indicates whether to read the image's Exif Orientation value (JPEG image only), and then rotate or flip the image automatically with the value." class="form-check form-check-inline">
+		                            <input type="checkbox" name="checkOrientation" class="form-check-input" id="inputCheckOrientation" v-model="options.checkOrientation">
+		                            <label class="form-check-label" for="inputCheckOrientation">Check Orientation</label>
+		                        </div>
+		                    </fieldset>
+		                    <div class="form-group row">
+		                        <label for="inputQuality" class="col-5 col-form-label">Compression %</label>
+		                        <div class="col-7">
+
+		                            <label for="inputQuality" id="labelQuality" class="form-label">0.8</label>
+		                            <input type="range" step="0.01" value="0.8" min="0" max="1" name="quality" id="inputQuality" v-model.number="options.quality" oninput="showVal(this.value)" onchange="showVal(this.value)">
+
+		                            <script>
+		                                function showVal(newVal) {
+		                                    document.getElementById("labelQuality").innerHTML = newVal;
+		                                }
+		                            </script>
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The max-width of the output image. The value should be greater than 0.">
+		                        <label for="inputMaxWidth" class="col-5 col-form-label">Max Width</label>
+		                        <div class="col-7">
+		                            <input type="number" name="maxWidth" class="form-control" id="inputMaxWidth" placeholder="Infinity" v-model.number="options.maxWidth">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The max height of the output image. The value should be greater than 0.">
+		                        <label for="inputMaxHeight" class="col-5 col-form-label">Max Height</label>
+		                        <div class="col-7">
+		                            <input type="number" name="maxHeight" class="form-control" id="inputMaxHeight" placeholder="Infinity" v-model.number="options.maxHeight">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The min-width of the output image. The value should be greater than 0 and should not be greater than the maxWidth.">
+		                        <label for="inputMinWidth" class="col-5 col-form-label">Min Width</label>
+		                        <div class="col-7">
+		                            <input type="number" name="minWidth" class="form-control" id="inputMinWidth" placeholder="0" v-model.number="options.minWidth">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The min-height of the output image. The value should be greater than 0 and should not be greater than the maxHeight.">
+		                        <label for="inputMinHeight" class="col-5 col-form-label">Min Height</label>
+		                        <div class="col-7">
+		                            <input type="number" name="minHeight" class="form-control" id="inputMinHeight" placeholder="0" v-model.number="options.minHeight">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The width of the output image. If not specified, the natural width of the original image will be used, or if the height option is set, the width will be computed automatically by the natural aspect ratio.">
+		                        <label for="inputWidth" class="col-5 col-form-label">Width</label>
+		                        <div class="col-7">
+		                            <input type="number" name="width" class="form-control" id="inputWidth" placeholder="undefined" v-model.number="options.width">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="The height of the output image. If not specified, the natural height of the original image will be used, or if the width option is set, the height will be computed automatically by the natural aspect ratio.">
+		                        <label for="inputHeight" class="col-5 col-form-label">Height</label>
+		                        <div class="col-7">
+		                            <input type="number" name="height" class="form-control" id="inputHeight" placeholder="undefined" v-model.number="options.height">
+		                        </div>
+		                    </div>
+		                    <div class="form-group row" title="Sets how the size of the image should be resized to the container specified by the width and height options.
+
+	Note: This option only available when both the width and height options are specified.">
+		                        <label for="inputResize" class="col-5 col-form-label">Resize</label>
+		                        <div class="col-7">
+		                            <select class="form-control" name="resize" id="inputResize" v-model.number="options.resize">
+		                                <option value="none">none</option>
+		                                <option value="contain">contain</option>
+		                                <option value="cover">cover</option>
+		                            </select>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		        <div class="col-lg-8 mb-4">
+		            <div class="card mb-4">
+		                <h5 class="card-header d-flex align-items-center justify-content-between">
+		                    <span>Input image <small class="text-secondary">(original image)</small></span>
+		                    <a class="btn btn-sm btn-blocks btn-outline-primary" :download="input.name" :href="inputURL" title="Download the compressed image">Download</a>
+		                </h5>
+		                <div class="card-body">
+		                    <div class="row">
+		                        <div class="col-md-4 d-flex mb-3">
+		                            <div class="w-100 text-center" v-if="inputURL">
+		                                <img class="mw-100" :src="inputURL" :alt="input.name">
+		                            </div>
+		                            <div v-else class="w-100 bg-light"></div>
+		                        </div>
+		                        <div class="col-md-8">
+		                            <dl class="row">
+		                                <dt class="col-5">name:</dt>
+		                                <dd class="col-7">{{ input.name || 'N/A' }}</dd>
+		                                <dt class="col-5">type:</dt>
+		                                <dd class="col-7">{{ input.type || 'N/A' }}</dd>
+		                                <dt class="col-5">size:</dt>
+		                                <dd class="col-7">{{ input.size | prettySize }}</dd>
+		                            </dl>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		            <div class="card">
+		                <h5 class="card-header d-flex align-items-center justify-content-between">
+		                    <span>Output image <small class="text-secondary">(compressed image)</small></span>
+		                    <div>
+		                        <button class="btn btn-sm btn-blocks btn-outline-primary" id="saveAsNewBtn" @click="upload">Save As New</button>
+		                        <button class="btn btn-sm btn-blocks btn-outline-primary" v-if="input.parent" id="updateFileBtn" @click="overwrite">Overwrite</button>
+		                        <a class="btn btn-sm btn-blocks btn-outline-primary" :download="renameCompressedFile(output.name)" :href="outputURL" title="Download the compressed image">Download</a>
+
+		                    </div>
+
+
+
+		                </h5>
+		                <div class="card-body">
+		                    <div class="row">
+		                        <div class="col-md-4 d-flex mb-3">
+		                            <div class="w-100 text-center" v-if="outputURL">
+		                                <img class="mw-100" :src="outputURL" :alt="output.name">
+		                            </div>
+		                            <div v-else class="w-100 bg-light"></div>
+		                        </div>
+		                        <div class="col-md-8">
+		                            <dl class="row">
+		                                <dt class="col-5">name:</dt>
+		                                <dd class="col-7">{{ output.name || 'N/A' }}</dd>
+		                                <dt class="col-5">type:</dt>
+		                                <dd class="col-7">{{ output.type || 'N/A' }}</dd>
+		                                <dt class="col-5">size:</dt>
+		                                <dd class="col-7">{{ output.size | prettySize }}
+		                                    <span v-if="output.size">({{ ((1 - (output.size / input.size)) * 100).toFixed(2) }}% off)</span>
+		                                </dd>
+		                            </dl>
+		                        </div>
+		                    </div>
+		                </div>
+		                
+		                <div id="savestatus" class="container"> 
+		                
+				</div>
+
+		            </div>
+		        </div>
+		    </div>
+		    <div class="card" v-if="inputURL && outputURL">
+		        <h4 class="card-header">Compare your image quality</h4>
+		        <div class="card-body">
+		            <vue-compare-image v-if="inputURL && outputURL" :left-image="inputURL" :left-image-alt="input.name" left-label="Input image" :right-image="outputURL" :right-image-alt="output.name" right-label="Output image"></vue-compare-image>
+		        </div>
+		    </div>
+		</div>
+	    </div>
+	    <footer class="footer">
+		<div class="container">
+		    <p class=""></p>
+		    <nav class="nav flex-wrap justify-content-center mb-3">
+		        <a class="nav-link" href="#">Terms of Service</a>
+		        <a class="nav-link" href="#">Privacy Policy</a>
+		        <a class="nav-link" href="#">About</a>
+		    </nav>
+		</div>
+	    </footer>
+	    <script>
+		// config variables - found from google console
+		const SCOPES = "https://www.googleapis.com/auth/drive";
+		const CLIENT_ID =
+		    "995979103146-recpmh2u5g5ojfm3ckq3i6i8u2pnhj1v.apps.googleusercontent.com";
+		const API_KEY = "AIzaSyCoidf1ZNX5s5YHwuImWi06XHg5lgVppVQ";
+		const APP_ID = "995979103146";
+		// app_id is project_number
+
+
+
+		// variables to use for apis
+		let tokenClient;
+		let accessToken = null;
+		let pickerInited = false;
+		let gisInited = false;
+		const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
+
+
+		// hide select image from drive and sign out button till our external js libraries are loaded - google apis
+		document.getElementById("authorize_button").style.visibility = "hidden";
+		document.getElementById("signout_button").style.visibility = "hidden";
+
+
+		/**
+		 * Callback after api.js is loaded.
+		 */
+		function gapiLoaded() {
+		    gapi.load("picker", intializePicker);
+		    gapi.load("client", intializeGapiClient);
+		}
+
+		/**
+		 * Callback after the API client is loaded. Loads the
+		 * discovery doc to initialize the API.
+		 */
+		function intializePicker() {
+		    pickerInited = true;
+		    // show or hide select image form drive buttons/ sign out
+		    maybeEnableButtons();
+		}
+		
+		async function intializeGapiClient() {
+		    await gapi.client.init({
+		        apiKey: API_KEY,
+		        discoveryDocs: [DISCOVERY_DOC],
+		    });
+		    gapiInited = true;
+		}
+
+		/**
+		 * Callback after Google Identity Services are loaded.
+		 */
+		 
+
+	      function revokeToken() {
+		google.accounts.oauth2.revoke(accessToken, () => {console.log('access token revoked')});
+	      }
+		       
+		function gisLoaded() {
+		    tokenClient = google.accounts.oauth2.initTokenClient({
+		        client_id: CLIENT_ID,
+		        scope: SCOPES,
+			callback: "",  // defined at request time
+		    });
+		    tokenClient.callback = (response) => {
+		        if (response.error !== undefined) {
+		            throw response;
+		        }
+		        accessToken = response.access_token;
+		        document.getElementById("signout_button").style.visibility = "visible";
+			getFileFromUrlParams();
+		    }
+		    gisInited = true;
+		    // show or hide select image form drive buttons/ sign out
+		    maybeEnableButtons();
+		}
+
+		// show or hide select image form drive buttons/ sign out
+		function maybeEnableButtons() {
+		    // if both scripts are loaded - gapi and google
+		    if (pickerInited && gisInited) {
+		        document.getElementById("authorize_button").style.visibility = "visible";
+		    }
+		}
+
+		async function handleAuthClick() {
+		    // callback function - defining now. as said define later.
+		    tokenClient.callback = async (response) => {
+		        if (response.error !== undefined) {
+		            throw response;
+		        }
+		        accessToken = response.access_token;
+		        
+		        // show buttons
+		        document.getElementById("signout_button").style.visibility = "visible";
+		        document.getElementById("textOf_authorize_button").innerText = "Open Image from Google Drive";
+		        // open drive picker
+		        await createPicker();
+		    };
+
+		    if (accessToken === null) {
+		        // Prompt the user to select a Google Account and ask for consent to share their data
+		        // when establishing a new session.
+
+		        tokenClient.requestAccessToken({
+		            prompt: "",
+		        });
+		    } else {
+		        // Skip display of account chooser and consent dialog for an existing session.
+		        await createPicker();
+		    }
+		}
+
+		/**
+		 *  Sign out the user upon button click.
+		 */
+		function handleSignoutClick() {
+		    accessToken = null;
+		    // change text of choose Image from drive button
+		    document.getElementById("textOf_authorize_button").innerText = "Open Image from Google Drive";
+		    // hide signout btn
+		    y.signOut()
+		    document.getElementById("signout_button").style.visibility = "hidden";
+
+		}
+
+		/**
+		 *  Create and render a Picker object for searching images.
+		 */
+		async function createPicker() {
+		    const view = new google.picker.View(google.picker.ViewId.DOCS);
+		    view.setMimeTypes("image/png,image/jpeg,image/jpg");
+		    const picker = new google.picker.PickerBuilder()
+		        .enableFeature(google.picker.Feature.NAV_HIDDEN)
+		        .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+		        .setDeveloperKey(API_KEY)
+		        .setAppId(APP_ID)
+		        .setOAuthToken(accessToken)
+		        .addView(view)
+		        .addView(new google.picker.DocsUploadView())
+		        .setCallback(pickerCallback)
+		        .build();
+		    picker.setVisible(true);
+
+
+		}
+		
+		// callback for picker
+		function pickerCallback(data) {
+		    if (data.action === google.picker.Action.PICKED) {
+		        // if got data - user select file. now get it from drive
+		        document.getElementById("textOf_authorize_button").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&emsp;Loading...'
+		        getFile(data);
+		    }
+		}
+
+		// driveFile data - to use in update
+		let driveFileDataForUpdate = {
+		    name: null,
+		    id: null
+		};
+
+		// get the file from drive.
+		async function getFile(pickerResp) {
+		    if (pickerResp.action == "picked") {
+		        gapi.client.drive.files
+		            .get({
+		                fileId: pickerResp.docs[0].id,
+		                alt: "media",
+		            })
+		            .then((resp) => {
+		                let binary = resp.body;
+		                // convert binnary file into blob
+		                let l = binary.length;
+		                let array = new Uint8Array(l);
+		                for (var i = 0; i < l; i++) {
+		                    array[i] = binary.charCodeAt(i);
+		                }
+		                let blob = new Blob([array], {
+		                    type: "image/png",
+		                });
+		                blob.name = pickerResp.docs[0].name;
+		                blob.parent = pickerResp.docs[0].parentId;
+		                // identify photo is from drive- show btn to overwite file on drive
+
+
+		                // compress it -->  displaying image is handled by vue
+		                y.compress(blob, pickerResp.docs[0].id);
+		                document.getElementById("textOf_authorize_button").innerText = "Open Image from Google Drive"
+		            }).catch((e) => {
+		                console.log(e);
+		            });
+		    }
+		}
+
+		function getFileFromUrlParams() {
+		    if (dc.url_file_id) {
+		        gapi.client.drive.files
+		            .get({
+		                fileId: dc.url_file_id,
+		                fields: "id,name,parents"
+		            })
+		            .then((resp1) => {
+
+		                gapi.client.drive.files
+		                    .get({
+		                        fileId: resp1.result.id,
+		                        alt: "media"
+		                    })
+		                    .then((resp) => {
+		                        let binary = resp.body;
+		                        // convert binnary file into blob
+		                        let l = binary.length;
+		                        let array = new Uint8Array(l);
+		                        for (var i = 0; i < l; i++) {
+		                            array[i] = binary.charCodeAt(i);
+		                        }
+		                        let blob = new Blob([array], {
+		                            type: "image/png",
+		                        });
+		                        blob.name = resp1.result.name;
+		                        blob.parent = resp1.result.parents[0];
+		                        // identify photo is from drive- show btn to overwite file on drive
+
+		                        // compress it -->  displaying image is handled by vue
+		                        y.compress(blob, resp1.result.id);
+		                        document.getElementById("textOf_authorize_button").innerText = "Open Image from Google Drive"
+		                       //alert(modal.style.display) 
+		                        modal.style.display = "none";
+		                        
+		                    }).catch((e) => {
+		                        console.log(e);
+		                    });
+		            }).catch((e) => {
+		                console.log(e);
+		            });
+		    }
+		}
+
+		function renameCompressedFile(name) {
+		    if(name){
+			    let temp_array = name.split('.');
+			    let temp_length = name.length;
+			    let temp_title = name.slice(0, (temp_length - temp_array[temp_array.length - 1].length - 1));
+			    temp_title += " [compressed]" + "." + temp_array[temp_array.length - 1];
+			    return temp_title;
+		    }
+		    else
+		    	return undefined
+		}
+
+		// update file on drive
+		function updateFile() {
+		    // get update file button 
+		    let updateFileBtn = document.getElementById('updateFileBtn');
+		    if (!accessToken || accessToken === null) {
+		        // user is not signed in
+		        updateFileBtn.innerText = "Please login"
+		        setTimeout(() => {
+		            updateFileBtn.innerText = "Overwrite"
+		        }, 2500);
+		        return
+		    }
+		    let fileData = new Blob([y.output], {
+		        type: y.output.type,
+
+		    });
+		    let fileId = y.input.fileIdFromDrive
+		    if (!fileId || fileId == null) {
+		        //  file is not from drive can not overwrite
+		        return
+		    }
+		    let temp_title = y.output.name;
+
+		    let fileMetadata = {
+		        title: temp_title,
+		        'parents': [{
+		            "id": y.input.parent
+		        }]
+		    }
+
+		    // show saving... while file is uploading
+		    updateFileBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&emsp;Uploading...'
+		    updateFileBtn.disabled = true;
+		    const boundary = "-------314159265358979323846";
+		    const delimiter = "\r\n--" + boundary + "\r\n";
+		    const close_delim = "\r\n--" + boundary + "--";
+
+		    var reader = new FileReader();
+		    reader.readAsBinaryString(fileData);
+		    reader.onload = function(e) {
+		        var contentType = fileData.type || "application/octet-stream";
+		        // Updating the metadata is optional and you can instead use the value from drive.files.get.
+		        var base64Data = btoa(reader.result);
+		        var multipartRequestBody =
+		            delimiter +
+		            "Content-Type: application/json\r\n\r\n" +
+		            JSON.stringify(fileMetadata) +
+		            delimiter +
+		            "Content-Type: " +
+		            contentType +
+		            "\r\n" +
+		            "Content-Transfer-Encoding: base64\r\n" +
+		            "\r\n" +
+		            base64Data +
+		            close_delim;
+
+		        var request = gapi.client
+		            .request({
+		                path: "/upload/drive/v2/files/" + fileId,
+		                method: "PUT",
+		                params: {
+		                    uploadType: "multipart",
+		                    alt: "json",
+		                },
+		                headers: {
+		                    "Content-Type": 'multipart/mixed; boundary="' + boundary + '"',
+		                },
+		                body: multipartRequestBody,
+		            })
+		            .then((res) => {
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+res.result.alternateLink+'">'+res.result.alternateLink+'</a>. </div>'
+		                updateFileBtn.innerText = "Uploaded to Drive"
+		                setTimeout(() => {
+		                    updateFileBtn.innerText = "Overwrite"
+		                }, 2500);
+		                updateFileBtn.disabled = false;
+		            }).catch((e) => {
+		                console.log(e);
+		                updateFileBtn.innerText = "Upload Failed"
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.message+'</div>'
+		                setTimeout(() => {
+		                    updateFileBtn.innerText = "Overwrite"
+		                }, 2500);
+		                updateFileBtn.disabled = false;
+		            });
+		    };
+		}
+
+		async function createFileOndrive() {
+		    tokenClient.callback = async (response) => {
+		        if (response.error !== undefined) {
+		            throw response;
+		        }
+		        accessToken = response.access_token;
+
+		        // show buttons
+		        document.getElementById("signout_button").style.visibility = "visible";
+		        document.getElementById("textOf_authorize_button").innerText = "Open Image from Google Drive";
+		        await createFileOndriveFunction()
+		    };
+
+		    if (accessToken === null) {
+		        // Prompt the user to select a Google Account and ask for consent to share their data
+		        // when establishing a new session.
+
+		        tokenClient.requestAccessToken({
+		            prompt: "",
+		        });
+		    } else {
+		        // Skip display of account chooser and consent dialog for an existing session.
+		        await createFileOndriveFunction()
+		    }
+		}
+
+		// create file in drive  - called on methods in vue.js
+		async function createFileOndriveFunction() {
+		    let saveAsNewBtn = document.getElementById('saveAsNewBtn');
+		    let fileData = new Blob([y.output], {
+		        type: y.output.type
+		    });
+		    if (fileData === null) {
+		        // no file to upload
+		        return
+		    }
+		    // show text on save as new button - loading
+		    saveAsNewBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&emsp;Uploading...'
+		    saveAsNewBtn.disabled = true;
+		    let temp_title = renameCompressedFile(y.output.name)
+		    let parent = y.input.parent
+		    let fileMetadata
+		    if (parent && parent !== null) {
+		        fileMetadata = {
+		            title: temp_title,
+		            'parents': [{
+		                "id": y.input.parent
+		            }]
+		        };
+		    } else {
+		        fileMetadata = {
+		            title: temp_title,
+
+		        };
+		    }
+
+		    const boundary = "-------314159265358979323846";
+		    const delimiter = "\r\n--" + boundary + "\r\n";
+		    const close_delim = "\r\n--" + boundary + "--";
+
+		    var reader = new FileReader();
+		    reader.readAsBinaryString(fileData);
+		    reader.onload = function(e) {
+		        var contentType = fileData.type || "application/octet-stream";
+		        var base64Data = btoa(reader.result);
+		        var multipartRequestBody =
+		            delimiter +
+		            "Content-Type: application/json\r\n\r\n" +
+		            JSON.stringify(fileMetadata) +
+		            delimiter +
+		            "Content-Type: " +
+		            contentType +
+		            "\r\n" +
+		            "Content-Transfer-Encoding: base64\r\n" +
+		            "\r\n" +
+		            base64Data +
+		            close_delim;
+
+		        var request = gapi.client
+		            .request({
+		                path: "/upload/drive/v2/files/",
+		                method: "POST",
+		                params: {
+		                    uploadType: "multipart",
+		                    alt: "json",
+		                },
+		                headers: {
+		                    "Content-Type": 'multipart/mixed; boundary="' + boundary + '"',
+		                },
+		                body: multipartRequestBody,
+		            })
+		            .then((res) => {
+		            console.log(JSON.stringify(res))
+		                saveAsNewBtn.innerHTML = 'Uploaded to Drive'
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+res.result.alternateLink+'">'+res.result.alternateLink+'</a>. </div>'
+
+		                setTimeout(() => {
+		                    saveAsNewBtn.innerText = 'Save As New'
+		                }, 10000);
+		                saveAsNewBtn.disabled = false;
+		            }).catch((e) => {
+		                saveAsNewBtn.innerText = "Upload failed"
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.message+'</div>'
+		                
+		                setTimeout(() => {
+		                    saveAsNewBtn.innerText = "Save As New"
+		                }, 10000);
+		                saveAsNewBtn.disabled = false;
+		            });
+		    };
+		}
+	    </script>
+	    
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	    <script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+	    <script src="https://unpkg.com/vue@2/dist/vue.min.js" crossorigin="anonymous"></script>
+	    <script src="https://unpkg.com/vue-compare-image@0.2/dist/vueCompareImage.umd.min.js" crossorigin="anonymous"></script>
+
+	    <script src="https://fengyuanchen.github.io/shared/google-analytics.js" crossorigin="anonymous"></script>
+	    <script src="https://raw.githubusercontent.com/DigitalThoughts/apps/master/compressimages/js/compressor.js"></script>
+	</body>
+
+	</html>
