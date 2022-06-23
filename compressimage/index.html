@@ -730,7 +730,7 @@
 		    let temp_title = y.output.name;
 
 		    let fileMetadata = {
-		        title: temp_title,
+		        "name": temp_title,
 		        'parents': [{
 		            "id": y.input.parent
 		        }]
@@ -839,14 +839,14 @@
 		    let fileMetadata
 		    if (parent && parent !== null) {
 		        fileMetadata = {
-		            title: temp_title,
-		            'parents': [{
+		            "name": temp_title,
+		            "parents": [{
 		                "id": y.input.parent
 		            }]
 		        };
 		    } else {
 		        fileMetadata = {
-		            title: temp_title,
+		            name: temp_title,
 
 		        };
 		    }
