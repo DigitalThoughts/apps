@@ -787,7 +787,7 @@
 		            }).catch((e) => {
 		                console.log(e);
 		                updateFileBtn.innerText = "Upload Failed"
-		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e+'</div>'
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.body+'</div>'
 		                setTimeout(() => {
 		                    updateFileBtn.innerText = "Overwrite"
 		                }, 2500);
@@ -899,7 +899,7 @@
 		                saveAsNewBtn.disabled = false;
 		            }).catch((e) => {
 		                saveAsNewBtn.innerText = "Upload failed"
-		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e+'</div>'
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.body+'</div>'
 
 		                setTimeout(() => {
 		                    saveAsNewBtn.innerText = "Save As New"
