@@ -776,6 +776,7 @@
 		                body: multipartRequestBody,
 		            })
 		            .then((res) => {
+		            	console.log(JSON.stringify(res))
 		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+res.result.alternateLink+'">'+res.result.alternateLink+'</a>. </div>'
 		                updateFileBtn.innerText = "Uploaded to Drive"
 		                setTimeout(() => {
@@ -874,7 +875,7 @@
 
 		        var request = gapi.client
 		            .request({
-		                path: "/upload/drive/v2/files/",
+		                path: "/upload/drive/v3/files/",
 		                method: "POST",
 		                params: {
 		                    uploadType: "multipart",
