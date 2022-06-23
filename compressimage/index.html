@@ -456,7 +456,7 @@
 	    </footer>
 	    <script>
 		// config variables - found from google console
-		const SCOPES = "https://www.googleapis.com/auth/drive";
+		const SCOPES = "https://www.googleapis.com/auth/drive.file";
 		const CLIENT_ID =
 		    "995979103146-recpmh2u5g5ojfm3ckq3i6i8u2pnhj1v.apps.googleusercontent.com";
 		const API_KEY = "AIzaSyCoidf1ZNX5s5YHwuImWi06XHg5lgVppVQ";
@@ -764,7 +764,7 @@
 
 		        var request = gapi.client
 		            .request({
-		                path: "/upload/drive/v2/files/" + fileId,
+		                path: "/upload/drive/v3/files/" + fileId,
 		                method: "PUT",
 		                params: {
 		                    uploadType: "multipart",
@@ -874,7 +874,7 @@
 
 		        var request = gapi.client
 		            .request({
-		                path: "/upload/drive/v2/files/",
+		                path: "/upload/drive/v3/files/",
 		                method: "POST",
 		                params: {
 		                    uploadType: "multipart",
