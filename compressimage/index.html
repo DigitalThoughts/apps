@@ -776,7 +776,7 @@
 		                body: multipartRequestBody,
 		            })
 		            .then((res) => {
-		            	console.log(JSON.stringify(res))
+		            	//console.log(JSON.stringify(res))
 		            	var filelink = 'https://drive.google.com/file/d/'+JSON.parse(res.body).id+'/view?usp=sharing'
 		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+filelink+'">'+filelink+'</a>. </div>'
 		                updateFileBtn.innerText = "Uploaded to Drive"
@@ -888,7 +888,7 @@
 		                body: multipartRequestBody,
 		            })
 		            .then((res) => {
-		            console.log(JSON.stringify(res))
+		            	//console.log(JSON.stringify(res))
 		                saveAsNewBtn.innerHTML = 'Uploaded to Drive'
 		                var filelink = 'https://drive.google.com/file/d/'+JSON.parse(res.body).id+'/view?usp=sharing'
 		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+filelink+'">'+filelink+'</a>. </div>'
@@ -898,6 +898,7 @@
 		                }, 10000);
 		                saveAsNewBtn.disabled = false;
 		            }).catch((e) => {
+		            	console.log(JSON.stringify(e))
 		                saveAsNewBtn.innerText = "Upload failed"
 		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.body+'</div>'
 
