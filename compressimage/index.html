@@ -764,7 +764,7 @@
 
 		        var request = gapi.client
 		            .request({
-		                path: "/upload/drive/v2/files/" + fileId,
+		                path: "/upload/drive/v3/files/" + fileId,
 		                method: "PUT",
 		                params: {
 		                    uploadType: "multipart",
@@ -889,7 +889,8 @@
 		            .then((res) => {
 		            console.log(JSON.stringify(res))
 		                saveAsNewBtn.innerHTML = 'Uploaded to Drive'
-		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+res.result.alternateLink+'">'+res.result.alternateLink+'</a>. </div>'
+		                var filelink = 'https://drive.google.com/file/d/'+JSON.parse(res.body).id+'/view?usp=sharing'
+		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-success alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> File uploaded - <a target="_blank" href="'+filelink+'">'+filelink+'</a>. </div>'
 
 		                setTimeout(() => {
 		                    saveAsNewBtn.innerText = 'Save As New'
@@ -898,7 +899,7 @@
 		            }).catch((e) => {
 		                saveAsNewBtn.innerText = "Upload failed"
 		                document.getElementById("savestatus").innerHTML = '<div class="alert alert-danger alert-dismissible"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Failed!</strong> Upload failed. '+e.message+'</div>'
-		                
+
 		                setTimeout(() => {
 		                    saveAsNewBtn.innerText = "Save As New"
 		                }, 10000);
