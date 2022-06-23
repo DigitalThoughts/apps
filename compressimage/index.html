@@ -255,20 +255,23 @@
 		                <a class="nav-link" href="https://drive.google.com/drive">My Google Drive</a>
 		            </li>
 		            <li class="nav-item dropdown">
-		                <a class="nav-link" href="#" title="About the author">About</a>
+				<span style="cursor:pointer" class="nav-link" title="Sign Out of Google Drive" onclick="handleSignoutClick()" id="signout_button">Sign out</span>
 		            </li>
 		        </ul>
 		    </div>
 		</div>
 	    </header>
-
+	<div class="container">
+			<hr>
+	<p>
+	You can compress and resize your images at client size without uploading to server. Also lets you to overwrite the compressed/resized file back to Google Drive™ without changing the Drive File URL
+	</p>
+	</div>
 	    <div class="container">
-		<hr>
+
 		<div id="app" v-cloak>
 		    <div class="card-body">
-		        <button id="authorize_button" onclick="handleAuthClick()" class="btn btn-primary"><img src="https://zipextractor.app/images/drive-main.svg"> <span id="textOf_authorize_button">Open Image from Google Drive</span></button>
-		        <button class="btn btn-primary" onclick="handleSignoutClick()" id="signout_button">Sign out</button>
-
+		        <button id="authorize_button" onclick="handleAuthClick()" class="btn btn-primary"><img src="https://apps.digitalthoughts.science/compressimage/assets/drive-main.svg"> <span id="textOf_authorize_button">Open Image from Google Drive</span></button>
 		    </div>
 		    <div class="card bg-light mb-4" @change="change" @dragover="dragover" @drop="drop">
 		        <div class="card-body">
@@ -457,8 +460,7 @@
 	    <script>
 		// config variables - found from google console
 		const SCOPES = "https://www.googleapis.com/auth/drive.file";
-		const CLIENT_ID =
-		    "331307335634-jp9848mqr1j2jm0gaivjm0ue5ag896pi.apps.googleusercontent.com";
+		const CLIENT_ID = "331307335634-jp9848mqr1j2jm0gaivjm0ue5ag896pi.apps.googleusercontent.com";
 		const API_KEY = "AIzaSyDmZc7YVdD9yZV4HOL4yNhqVmjHCpx0834";
 		const APP_ID = "331307335634";
 		// app_id is project_number
